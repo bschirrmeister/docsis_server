@@ -1,0 +1,6 @@
+1166716855: 130: Dmalloc version '5.3.0' from 'http://dmalloc.com/'
+1166716855: 130: flags = 0x4f48d03, logfile 'dmalloc_log'
+1166716855: 130: interval = 10, addr = 0, seen # = 0, limit = 0
+1166716855: 130: starting time = 1166716855
+1166716855: 130: process pid = 28574
+1166716855: 130: WARNING: tried to free(0) from 'ra=0x9a813f'

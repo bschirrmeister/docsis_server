@@ -1,0 +1,150 @@
+
+AC_PREREQ(2.59)
+AC_INIT(configure.in)
+AC_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(docsis_server, 3.5)
+
+# Checks for programs.
+AC_PROG_CXX
+AC_LANG_C
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AM_PROG_LIBTOOL
+
+# Checks for libraries.
+AC_CHECK_LIB(resolv, inet_aton)
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+
+# Checks for library functions.
+AC_FUNC_ALLOCA
+AC_FUNC_FORK
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
+AC_FUNC_REALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_TYPE_SIGNAL
+AC_FUNC_STAT
+AC_CHECK_FUNCS([floor gettimeofday inet_ntoa memmove memset select setenv socket strcasecmp strchr strerror strstr strtoull])
+
+
+if test "x$sysconfdir" = 'xNONE' || test "x$sysconfdir" = 'x'; then
+  CONFDIR='/etc'
+else
+  if test "x$sysconfdir" = 'x${prefix}/etc'; then
+    if test "x$prefix" = 'xNONE' || test "x$prefix" = 'x/usr'; then
+      CONFDIR='/etc'
+    else
+      CONFDIR="$sysconfdir"
+    fi
+  else
+    CONFDIR="$sysconfdir"
+  fi
+fi
+CPPFLAGS="$CPPFLAGS -DCONFDIR=\\\"$sysconfdir\\\""
+
+if test "x$localstatedir" = 'xNONE' || test "x$localstatedir" = 'x'; then
+  VARDIR='/etc'
+else
+  if test "x$localstatedir" = 'x${prefix}/var'; then
+    if test "x$prefix" = 'xNONE' || test "x$prefix" = 'x/usr'; then
+      VARDIR='/var'
+    else
+      VARDIR="$localstatedir"
+    fi
+  else
+    VARDIR="$localstatedir"
+  fi
+fi
+CPPFLAGS="$CPPFLAGS -DVARDIR=\\\"$localstatedir\\\""
+
+
+AC_ARG_WITH(chroot,
+[AS_HELP_STRING(--with-chroot=, (default: /tmp))],
+[ if test "x$withval" != "x" ; then
+    chroot="$withval"
+    AC_SUBST(chroot)
+    CPPFLAGS="$CPPFLAGS -DCHROOT_PATH=\\\"$chroot\\\""
+    if test -d "$chroot"; then
+      AC_MSG_WARN(No chroot directory ($chroot) is exists yet)
+    fi
+  fi ])
+
+AC_ARG_WITH(logfile,
+[AS_HELP_STRING(--with-logfile=, (default: /docsis_server))],
+[ if test "x$withval" != "x" ; then
+    logfile="$withval"
+    AC_SUBST(logfile)
+    CPPFLAGS="$CPPFLAGS -DLOGFILE=\\\"$logfile\\\""
+    if test -d "$logfile"; then
+      AC_MSG_WARN(No logfile directory ($logfile) is exists yet)
+    fi
+  fi ])
+
+
+AC_PATH_PROGS([M4], [gm4 gnum4 m4], 
+[notfound],[/usr/local/bin:/usr/freeware/bin:/usr/gnu/bin:${prefix}/bin:${exec_prefix}/bin:$PATH] )
+if test "x$M4" = "xnotfound"; then
+  AC_MSG_ERROR([M4 is required])
+else
+  ac_m4_vers=`$M4 --version 2>/dev/null | head -1` ;
+  ac_is_gnu_m4=`echo $ac_m4_vers | cut -d' ' -f1`;
+  if test "x$ac_is_gnu_m4" = "xGNU"; then
+        AC_MSG_RESULT([   found $ac_m4_vers at $M4 ])
+  else
+        AC_MSG_ERROR([ GNU M4 is needed ])
+  fi
+fi
+
+dnl Mysql check by Mikem.
+
+AC_PATH_PROG([MYSQL_CONFIG], [mysql_config], [/usr/libexec/mysql_config],[$PATH:${prefix}/bin:${exec_prefix}/bin:/opt/net-snmp/bin:/usr/local/bin:/usr/bin])
+if test -n "$MYSQL_CONFIG"; then
+  vers=`$MYSQL_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+  if test -n "$vers" && test "$vers" -ge 4000000
+  then
+     MYSQL_LIBS="`$MYSQL_CONFIG --libs`"
+     MYSQL_RPATH=
+     for args in $MYSQL_LIBS; do
+          case $args in
+            -L*)
+               MYSQL_RPATH="$MYSQL_CONFIG $args"
+               ;;
+          esac
+     done
+     MYSQL_RPATH=`echo $MYSQL_RPATH | sed -e "s/-L/-R/g"`
+     MYSQL_CFLAGS="`$MYSQL_CONFIG --cflags`"
+     vers=`$MYSQL_CONFIG --version 2>/dev/null`
+
+     AC_MSG_RESULT([   found mysql version $vers])
+     AC_DEFINE_UNQUOTED(HAVE_MYSQL, 1, [Defines if your system has the mysql library])
+  else
+     AC_MSG_ERROR([You need at least mysql 4.0.0, get it at http://www.mysql.com])
+  fi
+fi
+
+AC_SUBST(MYSQL_LIBS)
+AC_SUBST(MYSQL_CFLAGS)
+AC_SUBST(MYSQL_RPATH)
+AC_SUBST(MYSQL_PREFIX)
+
+dnl end libmysqlclient check
+
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
+AC_OUTPUT

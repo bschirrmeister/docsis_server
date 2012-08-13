@@ -1,0 +1,17 @@
+# Although the docsis_server is fairly well written, human error is
+# always a possiblity. For that reason when the server starts up it
+# tries to shed as much capability as possible.
+# The DHCP, TIME and SYSLOG are chrooted to /tmp
+# the TFTP are chrooted to the tftp file dir
+#
+# It is recommended that you run this file with "sh INSTALL.uid"
+
+groupadd -r docsis
+useradd -g docsis 				\
+	-d /tmp 				\
+	-M 					\
+	-c "non-privileged docsis_server user"	\
+	-s /sbin/nologin 			\
+	-r					\
+	docsis
+

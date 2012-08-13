@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+<tagfile>
+  <compound kind="dir">
+    <name>/home/mikem/Development/docsis_server/debug/</name>
+    <path>/home/mikem/Development/docsis_server/debug/</path>
+    <filename>dir_9e26182320c27f84eea22741ca018864.html</filename>
+    <file>config.h</file>
+  </compound>
+  <compound kind="dir">
+    <name>/home/mikem/Development/docsis_server/</name>
+    <path>/home/mikem/Development/docsis_server/</path>
+    <filename>dir_bb3e5f84a1e520f4cbff34dfd3b6a10e.html</filename>
+    <dir>/home/mikem/Development/docsis_server/debug/</dir>
+    <dir>/home/mikem/Development/docsis_server/src/</dir>
+  </compound>
+  <compound kind="dir">
+    <name>/home/mikem/Development/docsis_server/src/</name>
+    <path>/home/mikem/Development/docsis_server/src/</path>
+    <filename>dir_0bed86965aead5bd8ebe3333d2809922.html</filename>
+    <file>backg-backgrounder.c</file>
+    <file>dhcpd-dhcpd.c</file>
+    <file>dhcpd-dhcpd.h</file>
+    <file>dhcpd-options.c</file>
+    <file>dhcpd-options.h</file>
+    <file>dhcpd-socket.c</file>
+    <file>dhcpd-socket.h</file>
+    <file>docsis_server.c</file>
+    <file>docsis_server.h</file>
+    <file>mysql-cache_dhcp_conf.c</file>
+    <file>mysql-cache_tftp_bin.c</file>
+    <file>mysql-cache_tftp_conf.c</file>
+    <file>mysql-config_nets.c</file>
+    <file>mysql-config_opts.c</file>
+    <file>mysql-findip.c</file>
+    <file>mysql-findmac.c</file>
+    <file>mysql-misc_lease.c</file>
+    <file>mysql-mysql.c</file>
+    <file>mysql-mysql.h</file>
+    <file>mysql-newip.c</file>
+    <file>mysql-remote_cmds.c</file>
+    <file>mysql-summerize.c</file>
+    <file>mysql-syslog.c</file>
+    <file>mysql-tftp_filegen1.c</file>
+    <file>mysql-tftp_filegen2.c</file>
+    <file>mysql-tftp_log.c</file>
+    <file>mysql-update_leases.c</file>
+    <file>mysql-update_modems.c</file>
+    <file>mysql-utilities.c</file>
+    <file>syslogd-syslog.c</file>
+    <file>tftpd-file_cache.c</file>
+    <file>tftpd-file_cache.h</file>
+    <file>tftpd-tftpd.c</file>
+    <file>timed-time.c</file>
+    <file>tools-count_IPs.c</file>
+    <file>tools-db_config_encoder.c</file>
+    <file>tools-delete_old_leases.c</file>
+    <file>tools-find_ip.c</file>
+    <file>tools-find_mac.c</file>
+    <file>tools-list_messages.c</file>
+    <file>tools-stress_config_generator.c</file>
+    <file>util_configfile.c</file>
+    <file>util_configfile.h</file>
+    <file>util_executables.c</file>
+    <file>util_executables.h</file>
+    <file>util_macaddr.c</file>
+    <file>util_macaddr.h</file>
+    <file>util_md5.c</file>
+    <file>util_md5.h</file>
+    <file>util_time.c</file>
+    <file>util_time.h</file>
+    <file>Version.h</file>
+  </compound>
+</tagfile>

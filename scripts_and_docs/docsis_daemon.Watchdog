@@ -1,0 +1,95 @@
+#!/usr/bin/perl
+
+# Add to Crontab
+# */6 * * * * /root/bin/docsis_daemon.Watchdog
+
+$conf = '/etc/docsis-server.conf';
+$piddir = '/var/run';
+$failuretime = 180;		#must be greater than 60 seconds.
+				#180 sec (3 min) should be good.
+
+main: {
+	Read_Config_File();
+
+	chdir( $piddir );
+	opendir( DIR, $piddir );
+	my @pid_files = grep { /docsis_server\..+\.pid$/ } readdir( DIR );
+	closedir( DIR );
+
+	$tt = time;
+	$dead = 0;
+	$xdead = '';
+
+	foreach $file (@pid_files) {
+		@ss = stat( $piddir .'/'. $file );
+		$diff = $tt - $ss[9];
+		if ($diff > $failuretime) {
+			$dead = 1;
+			$xdead .= "pid file $file is $diff seconds old\n\n";
+		}
+	}
+
+	if ($dead == 1) {
+		system( "/sbin/service docsisd restart" );
+		Send_Email();
+	}
+}
+
+
+sub Read_Config_File {
+	unless (-e $conf) {
+		print "cannot read config file '$conf'\n";
+		exit(1);
+	}
+
+	open( CONF, "<$conf");
+	my @x = <CONF>;
+	close( CONF );
+
+	foreach my $x (@x) {
+		my @w = split(/\s+/, $x );
+		if ($w[0] eq '' || substr($w[0],0,1) eq '#') { next; }
+		my $key = lc $w[0];
+		my $val = $w[1];
+		$conf{$key} = $val;
+	}
+}
+
+sub Send_Email {
+	if (defined $conf{'server-name'}) { $server = $conf{'server-name'}; } else { return; }
+	if (defined $conf{'admin-email'}) { $email  = $conf{'admin-email'}; } else { return; }
+	if (defined $conf{'smtp-server'}) { $smtp   = $conf{'smtp-server'}; } else { return; }
+
+	my $message =
+"To: $email
+From: docsis_server\@$server_name
+Subject: Watchdog docsis_server restart
+
+Server: $server
+
+$xdead
+.
+";
+
+	use Net::Telnet();
+
+	$t = new Net::Telnet( Timeout => 600,
+				Port => 25,
+				Prompt => '/.*/');
+	# $t->dump_log( "dump_log" );
+	$t->open( $smtp );
+	$t->waitfor( '/220 .*\n/' );
+	$t->print( 'helo docsis_low_ip_warning' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'mail from: <docsis_guy@accesscomm.ca>' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'rcpt to: <'. $email .'>' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'data' );
+	$t->waitfor( '/354 .*\n/' );
+	$t->print( $message );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'quit' );
+	$t->close;
+}
+

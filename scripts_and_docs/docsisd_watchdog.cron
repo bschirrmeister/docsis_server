@@ -1,0 +1,5 @@
+# check to make sure the docsis_server is still running.
+
+# m h d m dw
+*/6 * * * *	root	/usr/sbin/docsis_daemon.Watchdog
+

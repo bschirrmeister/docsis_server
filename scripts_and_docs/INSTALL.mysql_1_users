@@ -1,0 +1,31 @@
+# This file sets up username and passwords for the mysql
+# database.
+
+# If you are upgrading from a previous version of docsis_server
+# you probably DON'T want to run this.
+
+# If you already have usernames and passwords in your
+# database I recommend you look at the differences between
+# these users and your own.
+
+# Then use this shell command to create the tables.
+# "mysql < INSTALL.mysql_1_users"
+
+# Additional setup information is in the INSTALL file.
+
+# ##########################################################
+
+# Add mysql_user
+GRANT SELECT,INSERT,UPDATE,DELETE
+ ON *.*
+ TO mysql_user@'localhost'
+ IDENTIFIED BY 'easy_password';
+
+GRANT CREATE,SELECT,INSERT,UPDATE,DELETE,INDEX,ALTER
+ ON TABLE syslog_server.*
+ TO mysql_user@'localhost'
+ IDENTIFIED BY 'easy_password';
+
+FLUSH TABLES;
+FLUSH PRIVILEGES;
+

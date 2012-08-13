@@ -1,0 +1,89 @@
+# This file contains the create definitions for the tables
+# needed by the powerDNS.
+
+# You can use any database name as it is set in your
+# docsis-server.conf file, but to describe the setup we
+# will assume that it is called "powerdns".
+
+# Then use this shell command to create the tables.
+# "mysql dhcp_server < INSTALL.mysql_3_pdns_tables"
+
+# Additional setup information is in the INSTALL file.
+
+# ##########################################################
+
+CREATE DATABASE IF NOT EXISTS powerdns;
+use powerdns;
+
+-- MySQL dump 10.9
+--
+-- Host: localhost    Database: powerdns
+-- ------------------------------------------------------
+-- Server version       4.1.20-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `domains`
+--
+
+DROP TABLE IF EXISTS `domains`;
+CREATE TABLE `domains` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `master` varchar(20) default NULL,
+  `last_check` int(11) default NULL,
+  `type` varchar(6) NOT NULL default '',
+  `notified_serial` int(11) default NULL,
+  `account` varchar(40) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name_index` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `records`
+--
+
+DROP TABLE IF EXISTS `records`;
+CREATE TABLE `records` (
+  `id` int(11) NOT NULL auto_increment,
+  `domain_id` int(11) default NULL,
+  `name` varchar(255) default NULL,
+  `type` varchar(6) default NULL,
+  `content` varchar(255) default NULL,
+  `ttl` int(11) default NULL,
+  `prio` int(11) default NULL,
+  `change_date` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `rec_name_index` (`name`),
+  KEY `nametype_index` (`name`,`type`),
+  KEY `domain_id` (`domain_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `supermasters`
+--
+
+DROP TABLE IF EXISTS `supermasters`;
+CREATE TABLE `supermasters` (
+  `ip` varchar(25) NOT NULL default '',
+  `nameserver` varchar(255) NOT NULL default '',
+  `account` varchar(40) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+

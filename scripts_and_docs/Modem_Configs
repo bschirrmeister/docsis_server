@@ -1,0 +1,287 @@
+
+delete from config_modem;
+
+delete from config_modem_bin;
+
+insert into config_modem (cfg_id, comment, cfg_txt) values
+
+(1,'1 IP Address','MaxCPE 1;'),
+(2,'2 IPs Address','MaxCPE 2;'),
+(3,'3 IPs Address','MaxCPE 3;'),
+(4,'4 IPs Address','MaxCPE 4;'),
+(5,'5 IPs Address','MaxCPE 5;'),
+(6,'6 IPs Address','MaxCPE 6;'),
+(7,'7 IPs Address','MaxCPE 7;'),
+(8,'8 IPs Address','MaxCPE 8;'),
+(9,'9 IPs Address','MaxCPE 9;'),
+(10,'10 IPs Address','MaxCPE 10;'),
+(11,'11 IPs Address','MaxCPE 11;'),
+(12,'12 IPs Address','MaxCPE 12;'),
+(13,'13 IPs Address','MaxCPE 13;'),
+(14,'14 IPs Address','MaxCPE 14;'),
+(15,'15 IPs Address','MaxCPE 15;'),
+(16,'16 IPs Address','MaxCPE 16;'),
+
+(1000,'Network Access Denied',    'NetworkAccess 0;'),
+(1001,'Network Access Authorized','NetworkAccess 1;'),
+
+
+(101,'DSflow 74kb normal',
+'DsServiceFlow { DsServiceFlowRef 101;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 74000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(102,'DSflow 92kb normal',
+'DsServiceFlow { DsServiceFlowRef 102; QosParamSetType 7;
+		 TrafficPriority 1;    MaxRateSustained 92000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(103,'DSflow 128kb normal',
+'DsServiceFlow { DsServiceFlowRef 103; QosParamSetType 7;
+		 TrafficPriority 1;    MaxRateSustained 128000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(104,'DSflow 256kb normal',
+'DsServiceFlow { DsServiceFlowRef 104; QosParamSetType 7;
+		 TrafficPriority 1;    MaxRateSustained 256000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(105,'DSflow 1mb normal',
+'DsServiceFlow { DsServiceFlowRef 105;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 1024000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(106,'DSflow 1.5mb normal',
+'DsServiceFlow { DsServiceFlowRef 106;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 1536000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(107,'DSflow 2mb normal',
+'DsServiceFlow { DsServiceFlowRef 107;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 2048000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(108,'DSflow 5mb normal',
+'DsServiceFlow { DsServiceFlowRef 108;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 5120000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(109,'DSflow 5.5mb normal',
+'DsServiceFlow { DsServiceFlowRef 109;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 5632000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(110,'DSflow 6mb normal',
+'DsServiceFlow { DsServiceFlowRef 110;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 6144000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+(111,'DSflow 7mb normal',
+'DsServiceFlow { DsServiceFlowRef 111;  QosParamSetType 7;
+		 TrafficPriority 1;     MaxRateSustained 7168000;
+		 MaxTrafficBurst 8000;  MinReservedRate 0;		}'),
+
+
+
+(201,'USflow 74kb normal',
+'UsServiceFlow { UsServiceFlowRef 201; QosParamSetType 7;
+		 TrafficPriority 1;    MaxRateSustained 74000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(202,'USflow 92kb normal',
+'UsServiceFlow { UsServiceFlowRef 202; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 92000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(203,'USflow 128kb normal',
+'UsServiceFlow { UsServiceFlowRef 203; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 128000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(204,'USflow 256kb normal',
+'UsServiceFlow { UsServiceFlowRef 204; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 256000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(205,'USflow 1mb normal',
+'UsServiceFlow { UsServiceFlowRef 205; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 1024000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(206,'USflow 1.5mb normal',
+'UsServiceFlow { UsServiceFlowRef 206; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 1536000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(207,'USflow 2mb normal',
+'UsServiceFlow { UsServiceFlowRef 207; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 2048000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(208,'USflow 5mb normal',
+'UsServiceFlow { UsServiceFlowRef 208; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 5120000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(209,'USflow 5.5mb normal',
+'UsServiceFlow { UsServiceFlowRef 209; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 5632000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(210,'USflow 6mb normal',
+'UsServiceFlow { UsServiceFlowRef 210; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 6144000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(211,'USflow 7mb normal',
+'UsServiceFlow { UsServiceFlowRef 211; QosParamSetType 7;
+                 TrafficPriority 1;    MaxRateSustained 7168000;
+		 MinReservedRate 0;    MaxConcatenatedBurst 1522;
+		 SchedulingType 2;     RequestOrTxPolicy 0;
+		 IpTosOverwrite 0x0000;					}'),
+
+(253,'VoIP test',
+'UsServiceFlow {
+	UsServiceFlowRef 253;		QosParamSetType 7;
+	MaxRateSustained 64000;		MinReservedRate 64000;
+	MaxConcatenatedBurst 1522;	SchedulingType 4;
+	RequestOrTxPolicy 0x00000000;	NominalPollInterval 10000;
+	ToleratedPollJitter 800;	IpTosOverwrite 0xf0f0;
+}
+UsPacketClass {
+	ClassifierRef 1;	ServiceFlowRef 2;
+	RulePriority 1;		ActivationState 1;
+	IpPacketClassifier {
+		IpDstAddr 204.83.142.0;
+		IpDstMask 255.255.255.0;
+}	}'),
+
+
+(254,'Special 5mb US for CityHall',
+'UsPacketClass { ClassifierRef 254; ServiceFlowRef 254; ActivationState 1;
+   IpPacketClassifier { IpSrcAddr 24.72.0.0;     IpSrcMask 255.255.0.0;
+                        IpDstAddr 204.83.142.0;  IpDstMask 255.255.255.0;
+ } }
+ UsServiceFlow { UsServiceFlowRef 254; QosParamSetType 7;
+                 TrafficPriority 7;    MaxConcatenatedBurst 0;
+                 RequestOrTxPolicy 0;
+                 MinReservedRate 5242000;  MaxRateSustained 5242000; } '),
+
+
+
+(301,'Down 111 Mhz','DownstreamFrequency 111000000;'),
+(302,'Down 555 Mhz','DownstreamFrequency 555000000;'),
+(303,'Down 567 Mhz','DownstreamFrequency 567000000;'),
+
+(401,'Upstream ID 1','UpstreamChannelId 1;'),
+
+(501,'No BPI','GlobalPrivacyEnable 0;'),
+(503,'Enable BPI',
+'GlobalPrivacyEnable 1;
+ BaselinePrivacy {
+ AuthTimeout 10; ReAuthTimeout 10; AuthGraceTime 600;
+ OperTimeout 10; ReKeyTimeout 10;  TEKGraceTime 600;
+ AuthRejectTimeout 60;
+}'),
+
+
+(605,'Class 5 - DS 1mb - US 1mb',
+'ClassOfService { ClassID 5; MaxRateDown 1024000; MaxRateUp 1024000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(606,'Class 6 - DS 74kb - US 74kb',
+'ClassOfService { ClassID 6; MaxRateDown 74000; MaxRateUp 74000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(607,'Class 7 - DS 92kb - US 92kb',
+'ClassOfService { ClassID 7; MaxRateDown 92000; MaxRateUp 92000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(608,'Class 8 - DS 256kb - US 128kb',
+'ClassOfService { ClassID 8; MaxRateDown 256000; MaxRateUp 128000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(609,'Class 9 - DS 5mb - US 1mb',
+'ClassOfService { ClassID 9; MaxRateDown 5120000; MaxRateUp 1024000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(610,'Class 10 - DS 5.5mb - US 1mb',
+'ClassOfService { ClassID 10; MaxRateDown 5632000; MaxRateUp 1024000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(611,'Class 11 - DS 6mb - US 1mb',
+'ClassOfService { ClassID 11; MaxRateDown 6144000; MaxRateUp 1024000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(612,'Class 12 - DS 7mb - US 1.5mb',
+'ClassOfService { ClassID 12; MaxRateDown 7168000; MaxRateUp 1536000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(613,'Class 13 - DS 2.5mb - US 2.5mb',
+'ClassOfService { ClassID 13; MaxRateDown 2560000; MaxRateUp 2560000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+(614,'Class 14 - DS 5mb - US 5mb',
+'ClassOfService { ClassID 14; MaxRateDown 5120000; MaxRateUp 5120000;
+ PriorityUp 1; MaxBurstUp 1600; PrivacyEnable 0; }'),
+
+
+(700,'Terayon SNMP Filters',
+'SnmpMibObject .1.3.6.1.2.1.69.1.2.1.2.1  IPAddress 204.83.142.0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.3.1  IPAddress 255.255.255.0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.4.1  String "docsis-write";
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.5.1  Integer 3;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.7.1  Integer 4;
+
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.2.2  IPAddress 10.1.1.50;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.3.2  IPAddress 255.255.255.255;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.4.2  String "docsis-write";
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.5.2  Integer 3;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.7.2  Integer 4;'),
+
+(701,'Com21 1110 SNMP Filters',
+'SnmpMibObject .1.3.6.1.2.1.69.1.2.1.2.1  IPAddress 204.83.142.0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.3.1  IPAddress 255.255.255.0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.4.1  String "docsis-write";
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.5.1  Integer 3;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.7.1  Integer 4;
+
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.2.2  IPAddress 10.1.1.50;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.3.2  IPAddress 255.255.255.255;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.4.2  String "docsis-write";
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.5.2  Integer 3;
+ SnmpMibObject .1.3.6.1.2.1.69.1.2.1.7.2  Integer 4;
+
+ /* Set Link Level Filters */
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.1.0      Integer 1;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.2.1  Integer 5;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.3.1  Integer 0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.4.1  Integer 1;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.5.1  Integer 2048;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.2.1  Integer 1;
+
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.2.2  Integer 5;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.3.2  Integer 0;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.4.2  Integer 1;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.5.2  Integer 2054;
+ SnmpMibObject .1.3.6.1.2.1.69.1.6.2.1.2.2  Integer 1;');

@@ -1,0 +1,6 @@
+# check on the number of IPs left for CPE devices.
+
+# m h d m dw
+0 9 *   * 1		root	/usr/local/bin/docsis_LowIP_Warning status
+0 9 */2 * *		root	/usr/local/bin/docsis_LowIP_Warning warning
+

@@ -1,0 +1,349 @@
+# This file contains the create definitions for the tables
+# needed by the docsis_server.
+
+# You can use any database name as it is set in your
+# docsis-server.conf file, but to describe the setup we
+# will assume that it is called "dhcp_server".
+
+# These would be your steps then to setting up the
+# tables. First start the MySQL server and make sure the
+# permissions are set properly. If you are paranoid like
+# me, then you will have 2 interface cards in your dhcp
+# server and only allow MySQL connections from the secure
+# side.
+
+# Then use this shell command to create the tables.
+# "mysql dhcp_server < INSTALL.mysql_2_dhcp_tables"
+
+# Additional setup information is in the INSTALL file.
+
+# ##########################################################
+
+CREATE DATABASE IF NOT EXISTS dhcp_server;
+CREATE DATABASE IF NOT EXISTS dhcp_backup;
+CREATE DATABASE IF NOT EXISTS syslog_server;
+
+USE dhcp_server;
+
+
+-- MySQL dump 10.9
+--
+-- Host: localhost    Database: dhcp_server
+-- ------------------------------------------------------
+-- Server version	4.1.20
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `config_modem`
+--
+
+DROP TABLE IF EXISTS `config_modem`;
+CREATE TABLE `config_modem` (
+  `cfg_id` int(10) unsigned NOT NULL default '0',
+  `comment` varchar(200) NOT NULL default '',
+  `cfg_txt` text NOT NULL,
+  `cfg_errors` text NOT NULL,
+  `cfg_ver` enum('any','v1.0','v1.1','v2.0') NOT NULL default 'any',
+  `cfg_update` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cfg_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `config_modem_bin`
+--
+
+DROP TABLE IF EXISTS `config_modem_bin`;
+CREATE TABLE `config_modem_bin` (
+  `cfg_id` int(10) unsigned NOT NULL default '0',
+  `cfg_bin` blob NOT NULL,
+  `cfg_ver` enum('any','v1.0','v1.1','v2.0') NOT NULL default 'any',
+  `cfg_update` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cfg_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `config_nets`
+--
+
+DROP TABLE IF EXISTS `config_nets`;
+CREATE TABLE `config_nets` (
+  `nettype` enum('CM','CPE','MTA','NO-AUTH') NOT NULL default 'CPE',
+  `cmts_ip` varchar(16) NOT NULL default '',
+  `cmts_vlan` smallint(5) unsigned NOT NULL default '0',
+  `network` varchar(20) NOT NULL default '',
+  `gateway` varchar(16) NOT NULL default '',
+  `grant_flag` enum('YES','NO') NOT NULL default 'YES',
+  `dynamic_flag` enum('YES','NO') NOT NULL default 'NO',
+  `full_flag` enum('YES','NO') NOT NULL default 'NO',
+  `range_min` varchar(16) NOT NULL default '',
+  `range_max` varchar(16) NOT NULL default '',
+  `lease_time` int(10) unsigned NOT NULL default '0',
+  `config_opt1` smallint(5) unsigned NOT NULL default '0',
+  `config_opt2` smallint(5) unsigned NOT NULL default '0',
+  `config_opt3` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`nettype`,`cmts_ip`,`cmts_vlan`,`network`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `config_opts`
+--
+
+DROP TABLE IF EXISTS `config_opts`;
+CREATE TABLE `config_opts` (
+  `server_id` tinyint(3) unsigned NOT NULL default '1',
+  `opt_id` smallint(5) unsigned NOT NULL default '0',
+  `opt_type` tinyint(3) unsigned NOT NULL default '0',
+  `opt_dtype` enum('IP','2IP','INT8','UINT8','INT16','UINT16','INT32','UINT32','CHAR','SUBOPT','HEX','MTA-IP','MTA-REALM') NOT NULL default 'CHAR',
+  `opt_value` varchar(250) NOT NULL default '',
+  `sub_opt` smallint(5) unsigned NOT NULL default '0',
+  `comment` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`server_id`,`opt_id`,`opt_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `config_opts_macs`
+--
+
+DROP TABLE IF EXISTS `config_opts_macs`;
+CREATE TABLE `config_opts_macs` (
+  `macaddr` varchar(15) NOT NULL default '',
+  `opt_id` smallint(5) unsigned NOT NULL default '0',
+  `opt_type` tinyint(3) unsigned NOT NULL default '0',
+  `opt_dtype` enum('IP','2IP','INT8','UINT8','INT16','UINT16','INT32','UINT32','CHAR','SUBOPT','HEX','MTA-IP','MTA-REALM') NOT NULL default 'CHAR',
+  `opt_value` varchar(250) NOT NULL default '',
+  `sub_opt` smallint(5) unsigned NOT NULL default '0',
+  `comment` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`macaddr`,`opt_id`,`opt_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `dhcp_bad_macs`
+--
+
+DROP TABLE IF EXISTS `dhcp_bad_macs`;
+CREATE TABLE `dhcp_bad_macs` (
+  `macaddr` varchar(15) NOT NULL default '',
+  `add_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `comments` varchar(255) NOT NULL default '0',
+  PRIMARY KEY  (`macaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `dhcp_leases`
+--
+
+DROP TABLE IF EXISTS `dhcp_leases`;
+CREATE TABLE `dhcp_leases` (
+  `ipaddr` varchar(16) NOT NULL default '',
+  `macaddr` varchar(15) NOT NULL default '',
+  `start_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `end_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `update_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `dynamic_flag` enum('YES','NO') NOT NULL default 'NO',
+  `lockip_flag` enum('YES','NO') NOT NULL default 'NO',
+  `pc_name` varchar(50) NOT NULL default '',
+  `subnum` bigint(20) unsigned NOT NULL default '0',
+  `modem_macaddr` varchar(15) NOT NULL default '',
+  `cmts_vlan` smallint(5) unsigned NOT NULL default '0',
+  `config_file` varchar(50) NOT NULL default '',
+  `config_opt` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`ipaddr`),
+  KEY `macaddr` (`macaddr`),
+  KEY `start_time` (`start_time`),
+  KEY `end_time` (`end_time`),
+  KEY `update_time` (`update_time`),
+  KEY `subnum` (`subnum`),
+  KEY `modem_macaddr` (`modem_macaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `dhcp_log`
+--
+
+DROP TABLE IF EXISTS `dhcp_log`;
+CREATE TABLE `dhcp_log` (
+  `thedate` date NOT NULL default '0000-00-00',
+  `thetime` time NOT NULL default '00:00:00',
+  `serverid` tinyint(3) unsigned NOT NULL default '0',
+  `sending` enum('ACK','NAK','OFFER','Q_ACK','Q_NAK') NOT NULL default 'ACK',
+  `type` enum('CM','CPE','MTA','NO-AUTH') NOT NULL default 'CM',
+  `dynamic_flag` enum('YES','NO') NOT NULL default 'NO',
+  `mcache_flag` enum('YES','NO') NOT NULL default 'NO',
+  `b_macaddr` bigint(20) unsigned NOT NULL default '0',
+  `b_ipaddr` int(10) unsigned NOT NULL default '0',
+  `b_modem_macaddr` bigint(20) unsigned NOT NULL default '0',
+  `subnum` bigint(20) unsigned NOT NULL default '0',
+  KEY `thedate` (`thedate`,`thetime`),
+  KEY `b_macaddr` (`b_macaddr`),
+  KEY `b_ipaddr` (`b_ipaddr`),
+  KEY `b_modem_macaddr` (`b_modem_macaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `dhcp_oldleases`
+--
+
+DROP TABLE IF EXISTS `dhcp_oldleases`;
+CREATE TABLE `dhcp_oldleases` (
+  `ipaddr` varchar(16) NOT NULL default '',
+  `macaddr` varchar(15) NOT NULL default '',
+  `start_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `end_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `update_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `dynamic_flag` enum('YES','NO') NOT NULL default 'NO',
+  `lockip_flag` enum('YES','NO') NOT NULL default 'NO',
+  `pc_name` varchar(50) NOT NULL default '',
+  `subnum` bigint(20) unsigned NOT NULL default '0',
+  `modem_macaddr` varchar(15) NOT NULL default '',
+  `cmts_vlan` smallint(5) unsigned NOT NULL default '0',
+  `config_file` varchar(50) NOT NULL default '',
+  `config_opt` smallint(5) unsigned NOT NULL default '0',
+  `deletion_date` datetime NOT NULL default '0000-00-00 00:00:00',
+  KEY `deletion_date` (`deletion_date`,`ipaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `dhcp_preleases`
+--
+
+DROP TABLE IF EXISTS `dhcp_preleases`;
+CREATE TABLE `dhcp_preleases` (
+  `ipaddr` varchar(16) NOT NULL default '',
+  `pc_name` varchar(50) NOT NULL default '',
+  `modem_macaddr` varchar(15) NOT NULL default '',
+  `cmts_vlan` smallint(5) unsigned NOT NULL default '0',
+  `config_file` varchar(50) NOT NULL default '',
+  `config_opt` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`ipaddr`),
+  KEY `modem_macaddr` (`modem_macaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `docsis_modem`
+--
+
+DROP TABLE IF EXISTS `docsis_modem`;
+CREATE TABLE `docsis_modem` (
+  `modem_macaddr` varchar(15) NOT NULL default '',
+  `cmts_vlan` smallint(5) unsigned NOT NULL default '0',
+  `serialnum` varchar(30) NOT NULL default '',
+  `subnum` bigint(20) unsigned NOT NULL default '0',
+  `config_file` varchar(50) NOT NULL default '',
+  `dynamic_config_file` varchar(255) NOT NULL default '',
+  `static_ip` tinyint(3) unsigned NOT NULL default '0',
+  `dynamic_ip` tinyint(3) unsigned NOT NULL default '0',
+  `config_opt` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`modem_macaddr`),
+  UNIQUE KEY `serialnum` (`serialnum`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `docsis_update`
+--
+
+DROP TABLE IF EXISTS `docsis_update`;
+CREATE TABLE `docsis_update` (
+  `modem_macaddr` varchar(15) NOT NULL default '',
+  `ipaddr` varchar(16) NOT NULL default '',
+  `cmts_ip` varchar(16) NOT NULL default '',
+  `agentid` varchar(20) NOT NULL default '',
+  `version` varchar(5) NOT NULL default '',
+  `mce_concat` enum('YES','NO') default NULL,
+  `mce_ver` enum('v1.0','v1.1','v2.0') default NULL,
+  `mce_frag` enum('YES','NO') default NULL,
+  `mce_phs` enum('YES','NO') default NULL,
+  `mce_igmp` enum('YES','NO') default NULL,
+  `mce_bpi` enum('BPI','BPI+') default NULL,
+  `mce_ds_said` tinyint(3) unsigned default NULL,
+  `mce_us_sid` tinyint(3) unsigned default NULL,
+  `mce_filt_dot1p` enum('YES','NO') default NULL,
+  `mce_filt_dot1q` enum('YES','NO') default NULL,
+  `mce_tetps` tinyint(3) unsigned default NULL,
+  `mce_ntet` tinyint(3) unsigned default NULL,
+  `mce_dcc` enum('YES','NO') default NULL,
+  `thetime` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`modem_macaddr`),
+  UNIQUE KEY `ipaddr` (`ipaddr`),
+  KEY `thetime` (`thetime`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `remote_command`
+--
+
+DROP TABLE IF EXISTS `remote_command`;
+CREATE TABLE `remote_command` (
+  `cmd_id` int(10) unsigned NOT NULL auto_increment,
+  `service` enum('DHCP','TFTP','TIME','SYSLOG','BACKG') NOT NULL default 'DHCP',
+  `command` varchar(100) NOT NULL default '',
+  `result` varchar(100) NOT NULL default '',
+  `intime` datetime NOT NULL default '0000-00-00 00:00:00',
+  `donetime` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`cmd_id`),
+  KEY `donetime` (`donetime`,`intime`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `sys_log`
+--
+
+DROP TABLE IF EXISTS `sys_log`;
+CREATE TABLE `sys_log` (
+  `thedate` date NOT NULL default '0000-00-00',
+  `thetime` time NOT NULL default '00:00:00',
+  `serverid` tinyint(3) unsigned NOT NULL default '0',
+  `priority` int(11) NOT NULL default '0',
+  `message` char(200) NOT NULL default '',
+  KEY `thedate` (`thedate`,`thetime`),
+  KEY `priority` (`priority`),
+  KEY `message` (`message`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `tftp_dynamic_log`
+--
+
+DROP TABLE IF EXISTS `tftp_dynamic_log`;
+CREATE TABLE `tftp_dynamic_log` (
+  `thedate` date NOT NULL default '0000-00-00',
+  `thetime` time NOT NULL default '00:00:00',
+  `serverid` tinyint(3) unsigned NOT NULL default '0',
+  `b_ipaddr` int(10) unsigned NOT NULL default '0',
+  `dynamic_config_file` char(100) NOT NULL default '',
+  `static_ip` tinyint(3) unsigned NOT NULL default '0',
+  `dynamic_ip` tinyint(3) unsigned NOT NULL default '0',
+  KEY `thedate` (`thedate`,`thetime`),
+  KEY `b_ipaddr` (`b_ipaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `tftp_file_log`
+--
+
+DROP TABLE IF EXISTS `tftp_file_log`;
+CREATE TABLE `tftp_file_log` (
+  `thedate` date NOT NULL default '0000-00-00',
+  `thetime` time NOT NULL default '00:00:00',
+  `serverid` tinyint(3) unsigned NOT NULL default '0',
+  `config_file` varchar(100) NOT NULL default '',
+  `ipaddr` varchar(16) NOT NULL default '',
+  KEY `thedate` (`thedate`,`thetime`),
+  KEY `ipaddr` (`ipaddr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+

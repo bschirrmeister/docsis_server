@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+# Add to Crontab
+#0 9 * * mon /root/bin/docsis_LowIP_Warning status
+#0 9 */3 * * /root/bin/docsis_LowIP_Warning warning
+
+
+#Total IP Addresses = 9867
+#IP Addresses Used = 8905      90.25
+#IP Addresses Unused = 962    9.75
+
+main: {
+	$command = shift;
+	unless (defined $command) { $command = 'warning'; }
+	
+	open( IN_Count, "/usr/sbin/Count_IPs 1 |" );
+	@count = <IN_Count>;
+	close( IN_Count );
+
+	if ($command eq 'warning') {
+		foreach $line ( @count ) {
+			@w = split(/\s+/, $line );
+			$unused_p = $w[5];
+
+			if ($w[1] eq 'IP' && $w[3] eq 'Unused') {
+				if ($w[6] < 5 && $w[5] < 50) {
+					$subject = 'DOCSIS Low IP Warning';
+					&send_email();
+				}
+			}
+		}
+	}
+	if ($command eq 'status') {
+		$subject = 'DOCSIS IP status message';
+		&send_email();
+	}
+}
+
+sub send_email {
+	open( CONFIG, "/etc/docsis-server.conf" );
+	@config = <CONFIG>;
+	close( CONFIG );
+
+	@email = ();
+	foreach $config (@config) {
+		if ($config =~ /$\#/) { next; }
+		chomp( $config );
+		@w = split(/\s+/, $config );
+		if ($w[0] eq 'admin-email') {
+			@email = @w;
+			shift( @email );
+		}
+		if ($w[0] eq 'server-name') {
+			$server_name = $w[1];
+		}
+	}
+
+	foreach $email (@email) {
+		&send_email2();
+	}
+}
+
+
+sub send_email2 {
+	my $message =
+"To: $email
+From: docsis_server\@$server_name
+Subject: $subject
+
+Server: $server_name 
+
+@count
+.
+";
+
+	use Net::Telnet();
+
+	$t = new Net::Telnet( Timeout => 600,
+				Port => 25,
+				Prompt => '/.*/');
+	# $t->dump_log( "dump_log" );
+	$t->open("smtp.accesscomm.ca");
+	$t->waitfor( '/220 .*\n/' );
+	$t->print( 'helo docsis_low_ip_warning' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'mail from: <docsis_guy@accesscomm.ca>' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'rcpt to: <'. $email .'>' );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'data' );
+	$t->waitfor( '/354 .*\n/' );
+	$t->print( $message );
+	$t->waitfor( '/250 .*\n/' );
+	$t->print( 'quit' );
+	$t->close;
+}

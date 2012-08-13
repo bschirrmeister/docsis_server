@@ -1,0 +1,246 @@
+This document describes the setup of the Cisco UBR headend.
+
+
+As I write this December, 2002 the latest IOS version 12.2(11)CX1 but
+since these change a lot just make sure it isn't older than that.
+
+I have a uBR7114 and a uBR7246VXR. The setup is similiar in most cases.
+I will insert comments where there are differences.
+
+***********************************************************************
+
+version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+!
+hostname cisco-docsis1
+!* I recommend something descriptive
+!
+!
+boot system flash slot0:ubr7200-ik9s-mz.122-11.CX1.bin
+aaa new-model
+
+aaa authentication login default local
+aaa session-id common
+enable secret 5 $1$HXOi_encrypted_password_fM0
+!
+username secretuser password 7 06080_encrypted_0C15
+cable modem max-cpe 4
+cable qos profile 5 max-downstream 1024
+cable qos profile 5 max-upstream 1024
+cable qos profile 5 priority 7
+cable qos permission create
+cable qos permission update
+cable qos permission modems
+ip subnet-zero
+no ip source-route
+ip cef
+!* this reduces the CPU load and makes the UBR faster
+!
+!
+ip domain-name example.com
+ip name-server 192.0.34.43
+!* insert your domain name and dns servers here
+!
+ip dhcp relay information option
+!* this makes the ubr append the cable modem MAC to the end
+!* of customer DHCP requests. Now you know which customer is
+!* using which IP with a cable modem.
+!
+!
+!
+class-map match-any p2p-out
+  match protocol kazaa2
+  match protocol fasttrack
+  match protocol napster
+  match protocol gnutella
+  match access-group 112
+!
+policy-map p2p-out
+  class p2p-out
+   police cir 3000000 bc 8000 be 8000
+     conform-action transmit
+     exceed-action drop
+!
+!
+!
+interface FastEthernet0/0
+ ip address 192.168.100.2 255.255.255.0
+!* replace this with your real external IP address.
+!
+ ip nbar protocol-discovery
+ ip route-cache same-interface
+ load-interval 30
+ full-duplex
+ service-policy output p2p-out
+ no cdp enable
+ hold-queue 512 in
+ hold-queue 512 out
+!
+!
+!* I will document 2 cable interfaces. Some chassis only have 1 cable
+!* interface. my 7246 has 8 and my 7114 has 1.
+!
+!
+interface Cable3/0
+ ip address 192.168.50.1 255.255.255.0 secondary
+ ip address 192.168.51.1 255.255.255.0 secondary
+ ip address 192.168.52.1 255.255.255.0 secondary
+!* The secondary interfaces are used for customer PCs
+!* Usually you would route something like a class C to the UBR
+!* It is possible to NAT but I wouldn't recommend it.
+!
+ ip address 10.15.1.1 255.255.0.0
+!* Your primary interface on the cable is used for the cable modems.
+!* unless you are extremely rich use fake IPs like the 10.x.x.x range
+!* for the cable modems. Unless you really need to ping the cable modem
+!* from anywhere in the world
+!
+ load-interval 30
+ no keepalive
+ cable shared-secret 0 the-shared-secret
+!* you set up your docsis config files with this shared secret
+!* and it authenticates them on the network. Its like a password
+!* for your cable modems.
+!
+ cable bundle 1 master
+!* If you have more than 1 cable interface you will want to bundle
+!* the interfaces together into 1 MAC domain. otherwise you would
+!* have to assign IP addresses to each cable interface and route
+!* between them. It would work, but it becomes difficult to manage
+!* all the IP subnets.
+!
+ cable downstream annex B
+ cable downstream modulation 64qam
+ cable downstream interleave-depth 8
+ cable downstream frequency 567000000
+ cable downstream channel-id 0
+ cable upstream 0 frequency 32000000
+ cable upstream 0 power-level 0
+ cable upstream 0 channel-width 3200000
+ cable upstream 0 data-backoff 5 6
+!* I got the data-backoff hint from a friend of mine.
+!
+ no cable upstream 0 shutdown
+ cable upstream 1 frequency 32000000
+ cable upstream 1 power-level 0
+ cable upstream 1 channel-width 3200000
+ cable upstream 1 data-backoff 5 6
+ no cable upstream 1 shutdown
+ cable upstream 2 frequency 32000000
+ cable upstream 2 power-level 0
+ cable upstream 2 channel-width 3200000
+ cable upstream 2 data-backoff 5 6
+ no cable upstream 2 shutdown
+ cable upstream 3 frequency 32000000
+ cable upstream 3 power-level 0
+ cable upstream 3 channel-width 3200000
+ cable upstream 3 data-backoff 5 6
+ no cable upstream 3 shutdown
+ no cable ip-multicast-echo
+!* I don't do multicast.
+!
+ cable source-verify dhcp
+!* before a customer pc is allowed onto the network
+!* we must see a valid dhcp request from his computer.
+!
+ cable dhcp-giaddr policy
+!* the primary IP is for cablemodems, secondary IP is for customers.
+!
+ cable helper-address 192.168.100.3
+!* IP address of docsis-dhcpd server.
+!
+!
+!* I have included a 2nd cable interface.
+! 
+interface Cable3/1
+ no ip address
+ ip route-cache flow
+ load-interval 30
+ no keepalive
+ cable shared-secret 0 the-shared-secret
+ cable bundle 1
+!* important line.
+ cable downstream annex B
+ cable downstream modulation 64qam
+ cable downstream interleave-depth 8
+ cable downstream frequency 567000000
+ cable downstream channel-id 1
+ cable upstream 0 frequency 32000000
+ cable upstream 0 power-level 0
+ cable upstream 0 channel-width 3200000
+ cable upstream 0 data-backoff 5 6
+ no cable upstream 0 shutdown
+ cable upstream 1 frequency 32000000
+ cable upstream 1 power-level 0
+ cable upstream 1 channel-width 3200000
+ cable upstream 1 data-backoff 5 6
+ no cable upstream 1 shutdown
+ cable upstream 2 frequency 32000000
+ cable upstream 2 power-level 0
+ cable upstream 2 channel-width 3200000
+ cable upstream 2 data-backoff 5 6
+ no cable upstream 2 shutdown
+ cable upstream 3 frequency 32000000
+ cable upstream 3 power-level 0
+ cable upstream 3 channel-width 3200000
+ cable upstream 3 data-backoff 5 6
+ no cable upstream 3 shutdown
+ no cable ip-multicast-echo
+ cable source-verify dhcp
+ cable dhcp-giaddr policy
+!
+!
+!
+ip classless
+!* cisco routers always pee on the seat.
+!
+ip route 0.0.0.0 0.0.0.0 192.168.100.1
+!* your default gateway. Make sure you have that router
+!* programmed to route the IP ranges to your UBR. Or you
+!* could get fancy and use a real routing protocol between
+!* the routers. I prefer strict static routing.
+!
+no ip http server
+!
+logging trap debugging
+logging facility local4
+logging 192.168.100.3
+!* to log events on the CMTS to the docsis_server
+!* SYSLOG database.
+!
+!
+access-list compiled
+!* compile the access-list to speed it up.
+!
+access-list 1 permit 192.168.100.3
+!* put access list 1 on your remote telnet sessions.
+!* also protects snmp read access.
+!* you don't want any unauthorized access to the server.
+!
+access-list 99 deny   any
+!* deny another hidden cisco service. me shakes head.
+!
+access-list 112 permit tcp 192.168.0.0 0.0.255.255 any eq 1214
+access-list 112 permit tcp 192.168.0.0 0.0.255.255 eq 1214 any
+access-list 112 permit tcp 192.168.0.0 0.0.255.255 any eq 6346
+access-list 112 permit tcp 192.168.0.0 0.0.255.255 eq 6346 any
+!* access list to look after kazaa etc.
+!* we don't want other internet users leeching off our customers
+!* driving up our Upload bandwidth. Our users can download with no
+!* rate limiting.
+!
+no cdp run
+!
+snmp-server community cisco-read RO 1
+snmp-server community ILMI RW 99
+!
+line con 0
+line aux 0
+line vty 0 4
+ access-class 1 in
+!
+end
+

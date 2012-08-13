@@ -1,0 +1,16 @@
+# Run this script with
+# sh INSTALL.Usefull_Scripts
+
+# Install Redhat Startup Script
+cp -f ./docsisd--Redhat_Startup_Script /etc/rc.d/init.d/docsisd
+chmod 755 /etc/rc.d/init.d/docsisd
+chkconfig --add docsisd
+chkconfig --list docsisd
+
+# Install Watchdog Script
+cp -f ./docsis_daemon.Watchdog /usr/sbin/.
+cp -f ./docsisd_watchdog.cron  /etc/cron.d/.
+
+cp -f ./docsis_LowIP_Warning /usr/local/bin/.
+cp -f ./docsis_LowIP.cron    /etc/cron.d/.
+
