@@ -29,8 +29,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * changed by Michael Bülte, D-75223 Niefern-Öschelbronn, michael.buelte@bridacom.de (MTA-Support)
  */
-
+ 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -44,6 +46,8 @@ u_int8_t *pend = NULL;
 
 // Prototype
 void Parse_Modem_Caps( dhcp_message *message );
+void Parse_CP10_Caps( dhcp_message *message );
+void Parse_MTA_Caps( dhcp_message *message );
 
 
 void  initOpt( dhcp_message *message ) {
@@ -150,6 +154,10 @@ void DecodeOptions( dhcp_message *message ) {
 			if ( memcmp(po->vendor_ident, "docsis", 6) == 0) {
 				po->docsis_modem = 1;
 				Parse_Modem_Caps( message );
+			}
+			if ( memcmp(po->vendor_ident, "pktc", 4) == 0) { /* MTA MB-DOPS */
+				po->docsis_modem = 1;
+				Parse_MTA_Caps( message );
 			}
 			break;
 
@@ -289,6 +297,39 @@ void Parse_Modem_Caps( dhcp_message *message ) {
 				break;
 		}
 	}
+}
+
+
+void Parse_MTA_Caps( dhcp_message *message ) { /* MB-DOPS */
+	packet_opts	*po;
+	u_int8_t	tmp[50];
+	int		c1, c2, i, j = 0;
+
+	po = &(message->in_opts);
+	memcpy( po->version, (po->vendor_ident + 0), 5 );
+	if (po->vendor_ident[9] == ':' &&
+	    po->vendor_ident[10] == '0' &&
+	    po->vendor_ident[11] == '5') {
+		for (i=14; po->vendor_ident[i]; i += 2 ) {
+			c1 = po->vendor_ident[i] - 48;
+			if (c1 < 0) c1 = 0;
+			if (c1 > 9) {
+				if (c1 >= 17 && c1 <= 22) c1 -= 7;
+				if (c1 >= 49 && c1 <= 54) c1 -= 39;
+				if (c1 >= 16) c1 = 0;
+			}
+			c2 = po->vendor_ident[i + 1] - 48;
+			if (c2 < 0) c2 = 0;
+			if (c2 > 9) {
+				if (c2 >= 17 && c2 <= 22) c2 -= 7;
+				if (c2 >= 49 && c2 <= 54) c2 -= 39;
+				if (c2 >= 16) c2 = 0;
+			}
+			tmp[j] = (c1 << 4) + c2;
+			j++;
+		}
+	}
+
 }
 
 

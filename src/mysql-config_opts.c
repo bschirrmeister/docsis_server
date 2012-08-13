@@ -23,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * changed by Michael Bülte, D-75223 Niefern-Öschelbronn, michael.buelte@bridacom.de (Option 122, MTAIP and MTAR)
  */
 
 #ifdef HAVE_CONFIG_H
@@ -157,7 +159,7 @@ void  my_Load_Opts( void ) {
 /* ************************************************************** */
 
 int  Convert_Opt( u_int8_t *outbuf, u_int8_t type, u_int8_t dtype, char *value, u_int64_t b_mac ) {
-	u_int8_t	*len, *tmp3 = NULL;
+	u_int8_t	*len,len2,*tmp3 = NULL;
 	char		tmp[301], *tmp2 = NULL;
 	char		smtmp[4];
 	int8_t		o_i8   = 0;
@@ -277,39 +279,79 @@ int  Convert_Opt( u_int8_t *outbuf, u_int8_t type, u_int8_t dtype, char *value, 
 		return( 2 + *len );
 		break;
 
-	case OPT_MTAIP:
-		//  MTA Provision Server (example 192.168.10.2)
-		//         1  9  2      1  6  8      1  0      2
-		// 00  03 31 39 32  03 31 36 38  02 31 30  01 32  00
-		// who invented this undocumented SHITE!!!
-		// I'm going to find the committee that invented this 
-		// and kick them all in the balls!!
-		*outbuf = 0;  outbuf++;  *len = 1;
-		for (o_i8 = 0; o_i8 < 4; o_i8++) {
-			*outbuf = 0;  tmp3 = outbuf;  outbuf++;  *len +=1;
-			while(*value != 0 && *value != '.' && *value >= 0x30 && *value <= 0x39) {
-				*outbuf = *value; outbuf++; value++; *tmp3 +=1; }
-			while (*value == '.') value++;
-			*len += *tmp3;
-		}
-		*outbuf = 0; *len +=1;
+	case OPT_MTAIP:  /*MB-DOPS changed by Michael Bülte, D-75223 Niefern-Öschelbronn, michael.buelte@bridacom.de  */
+		// MTA Provision Server (example 172.17.2.60)
+		//         1  7  2         1  7         2     60
+		// 0104ac11023c
+		// 01 - Suboption1, 04 - length, ac - 172, 11 - 17, 01 - 2, 3c - 60
+		// Calculate dez to hex
+		*len = 6;
+		inet_aton( value, &inp ); /* Dez to Binary */
+		smtmp[0] = 1; /* for Suboption 1 */
+		smtmp[1] = 4; /* for length (4 bytes) */
+		memcpy( outbuf, smtmp, 2 );
+		memcpy (outbuf + 2,&(inp.s_addr), 4) ; /* add b_ipaddr */
 		return( 2 + *len );
 		break;
 
-	case OPT_MTAR:
+	case OPT_MTAR:  /*MB-DOPS  changed by Michael Bülte, D-75223 Niefern-Öschelbronn, michael.buelte@bridacom.de */ 
+		//  Fill in Provisioningserver and Realm in mysql as follows: hostname.domainname.topleveldomain,Keberosrealm
+		//  Example: docsis_server35.bridacom.lab,BASIC.1
+		//  This will converted to Suboption 3 and 6
+		//
+		//  MTA Provision Server (example docsis_server_35.bridacom.lab)
+		//           docsis_server                       bridacom            lab
+		// 032000 10 646F637369735F7365727665725F3335 08 6272696461636F6D 03 6C616200
+		// 03 - Suboption 3, 20 - length overall, 00 - empty, 10 - length hostname, 646F637369735F7365727665725F3335 - docsis_server_35,
+		// 08 - length domainname, 6272696461636F6D - bridacom, 03 - length topleveldomain, 6c6162 - lab, 00 - empty
+		// 
 		// mta kerberos realm  (example BASIC.1)
-		//     B  A  S  I  C       1
-		// 05 42 41 53 49 43   01 31 00
+		//        B A S I C   1
+		// 0609054241534943013100
+		// 06 - Suboption 6, 09 - lenght overall, 05 length first eq "BASIC", 4241534943 - BASIC, 01 - length second eq 1/2, 31 - 1, 00 - empty
+		// 
+		strncpy( tmp, value, 300 );
+		tmp2 = tmp;
+		while (*tmp2 != 0 && *tmp2 != ',' && (tmp2 - tmp) < 50) tmp2++;
+		if (*tmp2 == ',') { *tmp2 = 0; tmp2++; }		/* split value in Provisioningserver and Keberos Realm */
+		strncpy(value,tmp,300);
+		len2 = strlen(tmp); 					/* get length of value Provisioningserver */
+		len2 +=3;						/* for length part */				
+		*outbuf = 3;  tmp3 = outbuf;  outbuf++;		 	/* add Suboption 3 */
+		*outbuf = len2;  tmp3 = outbuf;  outbuf++; *len=2; 	/* add length Provisioningserver, beginning count length overall */
 		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
-		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; }
+		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
+		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; } /* hostname part */
 		*len += *tmp3;
 		while (*value == '.') value++;
 		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
-		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; }
+		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; } /* domain part */
+		*len += *tmp3;
+		while (*value == '.') value++;
+		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
+		while(*value != 0 && *value != ',' ) { *outbuf = *value; outbuf++; value++; *tmp3 +=1; } /* toplevel part */
 		*len += *tmp3;
 		*outbuf = 0; *len +=1;
+		// end Provisioningserver  
+
+		// beginning Keberos Realm
+		strncpy(value,tmp2,300);
+		len2 = strlen(tmp2);   					/* get length of value Keberos-Realm */
+		len2 +=2;						/* for length part */
+		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
+		*outbuf = 6;  tmp3 = outbuf;  outbuf++; *len +=1; 	/* add Suboption 6 */
+		*outbuf = len2;  tmp3 = outbuf;  outbuf++; *len +=1; 	/* add length Keberos Realm */
+		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
+		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; } /* first part */
+		*len += *tmp3;
+		while (*value == '.') value++;
+		*outbuf = 0;  tmp3 = outbuf;  outbuf++; *len +=1;
+		while(*value != 0 && *value != '.') { *outbuf = *value; outbuf++; value++; *tmp3 +=1; } /* second part */
+		*len += *tmp3;
+		*outbuf = 0;
 		return( 2 + *len );
 		break;
+		
 	default:
 		return 0;
 		break;
