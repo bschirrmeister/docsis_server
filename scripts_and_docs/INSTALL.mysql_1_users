@@ -15,15 +15,30 @@
 
 # ##########################################################
 
+CREATE DATABASE IF NOT EXISTS snmpdata;
+CREATE DATABASE IF NOT EXISTS dhcp_server;
+CREATE DATABASE IF NOT EXISTS dhcp_backup;
+CREATE DATABASE IF NOT EXISTS syslog_server;
+
 # Add mysql_user
 GRANT SELECT,INSERT,UPDATE,DELETE
- ON *.*
- TO mysql_user@'localhost'
+ ON snmpdata.*
+ TO docsis@'localhost'
+ IDENTIFIED BY 'easy_password';
+
+GRANT SELECT,INSERT,UPDATE,DELETE
+ ON dhcp_server.*
+ TO docsis@'localhost'
+ IDENTIFIED BY 'easy_password';
+
+GRANT SELECT,INSERT,UPDATE,DELETE
+ ON dhcp_backup.*
+ TO docsis@'localhost'
  IDENTIFIED BY 'easy_password';
 
 GRANT CREATE,SELECT,INSERT,UPDATE,DELETE,INDEX,ALTER
  ON TABLE syslog_server.*
- TO mysql_user@'localhost'
+ TO docsis@'localhost'
  IDENTIFIED BY 'easy_password';
 
 FLUSH TABLES;

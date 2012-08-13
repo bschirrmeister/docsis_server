@@ -9,7 +9,7 @@
 groupadd -r docsis
 useradd -g docsis 				\
 	-d /home/docsis 				\
-	-M 					\
+	-m 					\
 	-c "non-privileged docsis_server user"	\
 	-s /sbin/nologin 			\
 	-r					\

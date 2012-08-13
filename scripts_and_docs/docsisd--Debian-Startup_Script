@@ -1,0 +1,67 @@
+#!/bin/sh
+#
+# docsisd       Start the docsis daemon.
+# chkconfig: 3 95 85
+# description: docsisd is a combination DHCP, syslog, \
+# TFTP, and ToD service for DOCSIS cable modems.
+
+#. /etc/init.d/functions
+. /lib/lsb/init-functions
+
+
+DOCSISD=/usr/local/sbin/docsis_server
+DESC="DOCSIS DHCP server"
+NAME1=docsisd
+
+test -f $DOCSISD || exit 0
+
+# Functions
+start() {
+	echo -n $"Starting $DESC: "
+        if /sbin/start-stop-daemon --start --quiet -g docsis --oknodo --pidfile /home/docsis/docsisd.pid --exec $DOCSISD ; then
+#        if /sbin/start-stop-daemon --start --quiet -g root -c docsis --oknodo --pidfile /home/docsis/docsisd.pid --exec $DOCSISD ; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+}
+
+stop() {
+	[ -z "$2" ] && echo -n $"Stopping $DESC: "
+        if /sbin/start-stop-daemon --stop --quiet --oknodo --name docsis_server; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+
+}
+
+removepids() {
+	/bin/rm -f /home/docsis/docsis_server.*
+}
+
+case "$1" in
+  start)
+	removepids
+	start
+	;;
+  stop)
+	stop
+	removepids
+	;;
+  status)
+	status_of_proc /usr/local/sbin/docsis_server docsis_server && exit 0 || exit $?
+	status $DOCSISD
+	;;
+  restart)
+	stop
+	sleep 2
+	removepids
+	start
+	;;
+  *)
+	echo "Usage: /etc/init.d/$NAME1 {start|stop|status|restart}"
+	exit 1
+esac
+
+exit 0

@@ -1,0 +1,19 @@
+You need to install the following packages on a debian-system:
+
+apt-get install \
+apache2 \
+apache2-mpm-prefork \
+apache2-utils \
+apache2.2-common \
+libsnmp-base \
+libsnmp15 \
+php5-common \
+php5-mcrypt \
+php5-mysql \
+ssh \
+build-essential \
+m4 \
+libmysqlclient-dev \
+vim \
+mysql-server \
+php-mail

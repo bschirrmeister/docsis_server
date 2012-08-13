@@ -1,11 +1,12 @@
 # Run this script with
 # sh INSTALL.Usefull_Scripts
+sh INSTALL.uid.debian
+
 
 # Install Redhat Startup Script
-cp -f ./docsisd--Redhat_Startup_Script /etc/rc.d/init.d/docsisd
-chmod 755 /etc/rc.d/init.d/docsisd
-chkconfig --add docsisd
-chkconfig --list docsisd
+cp -f ./docsisd--Debian-Startup_Script /etc/init.d/docsisd
+chmod 755 /etc/init.d/docsisd
+update-rc.d docsisd defaults
 
 # Install Watchdog Script
 cp -f ./docsis_daemon.Watchdog /usr/sbin/.
@@ -14,9 +15,18 @@ cp -f ./docsisd_watchdog.cron  /etc/cron.d/.
 cp -f ./docsis_LowIP_Warning /usr/local/bin/.
 cp -f ./docsis_LowIP.cron    /etc/cron.d/.
 
+# Installing config
+cp -f ./docsis-server.conf /etc
+mkdir /usr/local/etc
+ln -s /etc/docsis-server.conf /usr/local/etc/docsis-server.conf
+
 # Create TFTPBOOT-Directory
 mkdir /home/docsis/tftpboot
 chown docsis:docsis /home/docsis/tftpboot
 chmod g+s /home/docsis/tftpboot
 
+# Installing WebGUI
+cp -rp controldude /home/docsis/controldude
 
+# registering WebGUI
+cp controldude.conf /etc/apache2/conf.d/controldude.conf
