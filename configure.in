@@ -74,7 +74,7 @@ CPPFLAGS="$CPPFLAGS -DVARDIR=\\\"$localstatedir\\\""
 
 
 AC_ARG_WITH(chroot,
-[AS_HELP_STRING(--with-chroot=, (default: /tmp))],
+[AS_HELP_STRING(--with-chroot=, (default: /home/docsis))],
 [ if test "x$withval" != "x" ; then
     chroot="$withval"
     AC_SUBST(chroot)

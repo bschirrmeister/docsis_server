@@ -497,7 +497,7 @@ libexecdir='${exec_prefix}/libexec'
 datadir='${prefix}/share'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
-localstatedir='${prefix}/var'
+localstatedir='/var'
 libdir='${exec_prefix}/lib'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
@@ -1041,7 +1041,7 @@ Optional Packages:
                           both]
   --with-tags[=TAGS]
                           include additional configurations [automatic]
-  --with-chroot=          (default: /tmp)
+  --with-chroot=          (default: /home/docsis)
   --with-logfile=         (default: /docsis_server)
 
 Some influential environment variables:
@@ -22773,7 +22773,7 @@ echo "$as_me: error: M4 is required" >&2;}
 else
   ac_m4_vers=`$M4 --version 2>/dev/null | head -1` ;
   ac_is_gnu_m4=`echo $ac_m4_vers | cut -d' ' -f1`;
-  if test "x$ac_is_gnu_m4" = "xGNU"; then
+  if test "x$ac_is_gnu_m4"; then
         echo "$as_me:$LINENO: result:    found $ac_m4_vers at $M4 " >&5
 echo "${ECHO_T}   found $ac_m4_vers at $M4 " >&6
   else
