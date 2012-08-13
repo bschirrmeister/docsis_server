@@ -61,7 +61,7 @@
 # define TMPDIR "/tmp"
 #endif
 #ifndef CHROOT_PATH
-#define CHROOT_PATH  "/tmp"
+#define CHROOT_PATH  "/home/docsis"
 #endif
 #ifndef LOGFILE
 #define LOGFILE "docsis_server"
