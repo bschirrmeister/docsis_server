@@ -51,7 +51,7 @@ void my_buffer_save( char *qbuf ) {
 	SQL_buf		*tb;
 
 	if (buf_bytes > (30 * 1024 * 1024 )) {
-		fprintf(stderr, "sql buffer greater than 30 MB (%d bytes)", buf_bytes );
+		fprintf(stderr, "sql buffer greater than 30 MB (%ld bytes)", buf_bytes );
 		return;
 	}
 
@@ -98,7 +98,7 @@ void my_buffer_save( char *qbuf ) {
 void  Flush_ALL_SQL_Updates( void ) {
 	SQL_buf		*tb;
 
-	fprintf(stderr,"sql buffer was %d deep (%d bytes)\n", buf_cnt, buf_bytes );
+	fprintf(stderr,"sql buffer was %d deep (%ld bytes)\n", buf_cnt, buf_bytes );
 
 	while (buffer != NULL) {
 		tb = buffer;
@@ -137,7 +137,7 @@ void Flush_SQL_Updates( void ) {
 
 		flushcc++;
 		if (flushcc > max_flush) {
-			fprintf(stderr,"sql buffer %d deep (%d bytes)\n", buf_cnt, buf_bytes);
+			fprintf(stderr,"sql buffer %d deep (%ld bytes)\n", buf_cnt, buf_bytes);
 			return;
 		}
 	}

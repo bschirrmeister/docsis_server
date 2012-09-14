@@ -5,7 +5,17 @@
 # description: docsisd is a combination DHCP, syslog, \
 # TFTP, and ToD service for DOCSIS cable modems.
 
-#. /etc/init.d/functions
+
+### BEGIN INIT INFO
+# Provides:          docsis_server
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: DOCSIS_SERVER
+# Description:       Starts docsis_server
+### END INIT INFO
+
 . /lib/lsb/init-functions
 
 

@@ -1,3 +1,4 @@
+USE dhcp_server;
 
 delete from config_modem;
 

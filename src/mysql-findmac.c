@@ -59,6 +59,9 @@ int   my_findMAC( dhcp_message *message ) {
 	result = my_findMAC_PRECPE( message );
 	if (result) return LEASE_CPE;
 
+	result = my_findMAC_CMUNKNOWN( message );
+	if (result) return LEASE_UNKNOWN;
+
 	return LEASE_NOT_FOUND;
 }
 
@@ -157,6 +160,77 @@ int   my_findMAC_CM( dhcp_message *message ) {
 	return 1;
 }
 
+int   my_findMAC_CMUNKNOWN( dhcp_message *message ) {
+//THIS FUNKCTION IS INTEDED TO FIND A DEFAULT-BOOTFILE DEPENDING ON THE CABLEMODEMs MODEL-NAME
+//THEREFOR AN ADDITIONAL DATABASE HAS BEEN CREATED.
+
+//TODO: ADDING A FUNCTION FOR A TRUE DEFAULT-FILE IF NO OTHER FILE IS FOUND.
+
+        char            qbuf[150];
+        MYSQL_RES       *res;
+        MYSQL_ROW       myrow;
+        struct in_addr  inp;
+        int             numr, retv;
+
+	if(my_GetModemDefault() != 1) { return 0; } 	
+	if ( message->in_opts.docsis_modem != 1 ) { return 0; }
+	my_syslog(LOG_INFO, "searching for bootfile");
+
+        snprintf( qbuf, 150, "select BOOTFILE from config_default where MODEL = '%s'",
+                message->in_opts.vsi_model );
+        SQL_QUERY_RET0( qbuf );
+        res = mysql_store_result( my_sock );
+        if (res == NULL) { return 0; }
+
+        numr = mysql_num_rows( res );
+        my_syslog(LOG_INFO, "found %d lines", numr) ;
+
+        if (numr == 0) {	//	mysql_free_result(res); return 0; }
+		mysql_free_result(res); 
+        	snprintf( qbuf, 150, "select BOOTFILE from config_default where VENDOR = '%s'",
+                message->in_opts.vsi_vendor );
+        	SQL_QUERY_RET0( qbuf );
+        	res = mysql_store_result( my_sock );
+                numr = mysql_num_rows( res );
+        
+      		if (numr == 0) { 
+			 mysql_free_result(res); 
+			 strncpy( message->cfname, my_GetModemDefaultFile(), MAX_CONFIG_FILE_NAME -1 );
+			 if ( strlen(message->cfname) == 1 ) { 
+			 	my_syslog(LOG_INFO, "Default-Bootfile not set in configuration!");
+			 	return 0; 
+				}
+			} else { 
+        	 	 myrow = mysql_fetch_row( res );
+        	 	 strncpy( message->cfname, (myrow)[0], MAX_CONFIG_FILE_NAME -1 );
+        		 mysql_free_result(res);
+			}
+		}
+
+	// if (res == NULL) { return 0; }
+
+        //if (myrow == NULL) { mysql_free_result(res); return 0; }
+
+        message->lease_type = LEASE_CM;
+
+        message->vlan        = strtoul( "1", NULL, 10 );
+        message->subnum      = strtoull( message->in_opts.vsi_serialno, NULL, 10 );
+        message->static_ip   = strtoul( "0", NULL, 10 );
+        message->dynamic_ip  = strtoul( "0", NULL, 10 );
+        message->opt         = strtoul( "0", NULL, 10 );
+        
+	my_syslog(LOG_INFO, "selected %s for modem: %s model: %s vendor: %s ", message->cfname, message->s_macaddr,message->in_opts.vsi_model,message->in_opts.vsi_vendor );
+
+        if ( my_findIP_CM(message) ) { // error finding IP for CM
+                my_getNewIP_CM( message );
+        } else {
+                if ( Verify_Vlan(message) ) { // IP in wrong subnet
+                        my_Clear_MCACHE_Entry(message);
+                        my_getNewIP_CM( message );
+                }
+        }
+        return 1;
+}
 
 int   my_findMAC_CPE( dhcp_message *message ) {
 	char		qbuf[230];

@@ -207,6 +207,7 @@ int   my_findMAC( dhcp_message *message );
 int   my_findBADMAC( dhcp_message *message );
 int   my_findIP_CM( dhcp_message *message );
 int   my_findMAC_CM( dhcp_message *message );
+int   my_findMAC_CMUNKNOWN( dhcp_message *message );
 int   my_findMAC_CPE( dhcp_message *message );
 int   my_findMAC_PRECPE( dhcp_message *message );
 

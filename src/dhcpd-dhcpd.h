@@ -80,6 +80,7 @@
 #define LEASE_CM		1
 #define LEASE_CPE		2
 #define LEASE_MTA		3
+#define LEASE_UNKNOWN		4
 #define LEASE_NOAUTH		8
 #define LEASE_REJECT		9
 
@@ -126,6 +127,17 @@ typedef struct _packet_opts {
 	/* option 0x0c */
 	u_int32_t       host_name_len;
 	char            host_name[2048];
+
+	/* option 0x2b */
+	u_int32_t       vsi_len;
+	char		vsi[2048];
+	char		vsi_serialno[255];
+	char		vsi_hwver[255];
+	char		vsi_swver[255];
+	char		vsi_bootrom[255];
+	char		vsi_oui[255];
+	char		vsi_model[255];
+	char		vsi_vendor[255];
 
 	/* option 0x32 */
 	u_int32_t       request_addr;

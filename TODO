@@ -1,0 +1,16 @@
+# Softwareupdater
+
+The usage of Option 43 enalbes access to the CMs vendor-information
+which contains the software-version and the model-type. Based on 
+this information a release-management could be implemented.
+
+
+# Packetcable reimplementation
+
+Changing the Packetcable-patch so that the subnettype MTA could be used.
+
+
+# Improving Logmessages for better readability
+
+Some Logmessages are not well chosen and may lead into a wrong direction.
+

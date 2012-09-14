@@ -1,0 +1,54 @@
+DOCSIS_SERVER has originally been developed by docsis_guy and can be downloaded here:
+http://users.accesscomm.ca/docsis_server/
+
+The documentation on that website is a little bit outdated but can still be applied to this release.
+
+For some clearification I've added a File INSTALL.mysql_4_data which contains some examples for the configuration.
+
+This release includes a patch from micabu that enables packetcable, the patch and some howto can be found at http://www.docsis.org/node/486
+
+
+14 Sep 2012: 
+I've added support for DHCP-Option 43 which contains Information about the vendor, softwareversion, model and some others.
+
+The usage of this Options enables you to give some default-configurations to the devices
+depending on the vendor or the model and/or hardware-version.
+
+to activate this functionality you've got to add the following-settings to docsis_server.conf
+
+	----------------------------------------------------
+	ModemDefault		yes
+	ModemDefaultFile	no-service.bin
+	----------------------------------------------------
+
+If you want to select the bootfile for Model/Vendor you would need to add the mysql-table config_default.
+
+	----------------------------------------------------
+	/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+	/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+	/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+	/*!40101 SET NAMES utf8 */;
+	
+	
+	CREATE TABLE IF NOT EXISTS `config_default` (
+  	`ID` int(255) NOT NULL AUTO_INCREMENT,
+  	`VENDOR` varchar(255) NOT NULL,
+  	`MODEL` varchar(255) NOT NULL,
+  	`BOOTFILE` varchar(255) NOT NULL,
+  	PRIMARY KEY (`ID`),
+  	UNIQUE KEY `MODEL` (`MODEL`),
+  	KEY `ID` (`ID`)
+	) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+	----------------------------------------------------
+	
+
+The following data should serve as an example:
+
+	----------------------------------------------------
+	INSERT INTO `config_default` (`ID`, `VENDOR`, `MODEL`, `BOOTFILE`) VALUES
+	(1, 'Cisco', 'EPC3208', 'cisco.bin'),
+	(2, 'Motorola Corporation', '', 'moto.bin'),
+	(3, '', 'THG520', 'thg520.bin');
+	----------------------------------------------------
+
+

@@ -119,6 +119,17 @@ char * GetConfigVar( char *key ) {
 }
 
 
+int * my_GetModemDefault( void ) {
+	char	*retval;
+	retval = GetConfigVar( "ModemDefault" );
+	if (*retval == 'y') return 1;
+	return 0;
+}
+
+char * my_GetModemDefaultFile( void ) {
+	return( GetConfigVar( "ModemDefaultFile" ) );
+}
+
 char * my_GetTFTPdir( void ) {
 	return( GetConfigVar( "tftp-dir" ) );
 }

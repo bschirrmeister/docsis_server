@@ -44,7 +44,7 @@ available_tags=" CXX"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host mikem-desktop:
+# Libtool was configured on host doscis-server:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/bash"
@@ -325,7 +325,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec="/lib64 /usr/lib64 /usr/local/lib64"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /usr/local/lib /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/mesa "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -6692,7 +6692,7 @@ build_old_libs=`case $build_libtool_libs in yes) $echo no;; *) $echo yes;; esac`
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host mikem-desktop:
+# Libtool was configured on host doscis-server:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/bash"
@@ -6871,11 +6871,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.1.3/../../../../lib/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.1.3/crtbeginS.o"
+predep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.6.1/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.1.3/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.1.3/../../../../lib/crtn.o"
+postdep_objects="/usr/lib/gcc/x86_64-linux-gnu/4.6.1/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -6887,7 +6887,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/x86_64-linux-gnu/4.1.3 -L/usr/lib/gcc/x86_64-linux-gnu/4.1.3 -L/usr/lib/gcc/x86_64-linux-gnu/4.1.3/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
+compiler_lib_search_path="-L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -6970,7 +6970,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec="/lib64 /usr/lib64 /usr/local/lib64"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /usr/local/lib /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/mesa "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""

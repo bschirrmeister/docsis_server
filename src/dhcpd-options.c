@@ -103,11 +103,11 @@ void DecodeOptions( dhcp_message *message ) {
 
 	while( flag ) {
 		if (ino >= maxo) { flag = 0; continue; }
-		kT = *ino; ino++;
-		kL = *ino; ino++;
+		kT = *ino; ino++; // DHCP-Option
+		kL = *ino; ino++; // DHCP-Option-Length
 		kRL = kL;
 		if (kRL > (maxo - ino)) { kRL = (maxo - ino); }
-
+		//fprintf(stderr,"DEBUG: OPTION: %d LENGTH: %d\n", kT, kL);
 		switch( kT ) {
 		case 0x00:
 			flag = 0;
@@ -122,6 +122,55 @@ void DecodeOptions( dhcp_message *message ) {
 				     (*p >= 91 && *p <= 96) ||
 				     (*p >= 123 ) ) {
 					*p = '-';
+				}
+			}
+			break;
+
+		case 0x2b:	/*  vendor-specific-information  */ {
+                        u_int8_t        mmT, mmL, mmRL, mmCK;
+			
+			po->vsi_len = kRL;
+                        mmCK = kRL;
+                        while (mmCK > 0) {
+                        	mmT = *ino; ino++; mmCK--; //DHCP-SubOption
+                        	mmL = *ino; ino++; mmCK--; //DHCP-SubOptionLength
+                      		mmRL = mmL;
+
+                        	if (mmRL > (maxo - ino)) { mmRL = (maxo - ino); }
+		//		fprintf(stderr,"DEBUG: OPTION: %d SUBOPTION: %d LENGTH: %d\n", kT, mmT, mmL);
+                                switch( mmT ) {
+                                case 0x04:              // Serialnumber
+					memcpy( po->vsi_serialno, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"SERIAL: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_serialno);
+                                        break;
+                                case 0x05:              // HW-Version
+					memcpy( po->vsi_hwver, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"HW-Version: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_hwver);
+                                        break;
+                                case 0x06:              // SW-Version
+					memcpy( po->vsi_swver, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"SW-Version: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_swver);
+                                        break;
+                                case 0x07:              // Bootrom
+					memcpy( po->vsi_bootrom, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"BOOTROM: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_bootrom);
+                                        break;
+                                case 0x08:              // Organizationally Uniqe Identifier
+					memcpy( po->vsi_oui, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"OUI: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_oui);
+                                        break; 
+                                case 0x09:              // Modelnumber
+					memcpy( po->vsi_model, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"MODEL: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_model);
+                                        break;
+                                case 0x0a:              // Vendorname
+					memcpy( po->vsi_vendor, ino, mmRL ); ino += mmL; mmCK -= mmL;
+                                        //fprintf(stderr,"VENDOR: %d %d %d %s\n", mmT, mmL, mmRL, po->vsi_vendor);
+                                        break;
+	                         default:
+       		                          ino += mmL;  mmCK -= mmL;
+                                 	  break;
+                                        }
 				}
 			}
 			break;
@@ -183,12 +232,13 @@ void DecodeOptions( dhcp_message *message ) {
                                         mmL = *ino; ino++; mmCK--;
                                         mmRL = mmL;
                                         if (mmRL > (maxo - ino)) { mmRL = (maxo - ino); }
+				        //fprintf(stderr,"DEBUG: OPTION: %d SUBOPTION: %d LENGTH: %d\n", kT, mmT, mmL);
 					switch( mmT ) {
 					case 0x01:		// agent id from Cisco CMTS
                                                 memcpy( po->agentid, ino, mmRL ); ino += mmL; mmCK -= mmL;
                                                 po->agentid_len = mmRL;
                                                 cv_macaddr( po->agentid, po->s_agentid, mmRL );
-                                                // fprintf(stderr,"%d %d %d %s -- ", mmT, mmL, mmRL, po->s_agentid );
+                                                //fprintf(stderr,"AGENTID: %d %d %d %s -- \n", mmT, mmL, mmRL, po->s_agentid );
 						break;
                                         case 0x02:		// CM mac address
                                                 memcpy( po->modem_mac, ino, mmRL ); ino += mmL; mmCK -= mmL;
@@ -198,7 +248,7 @@ void DecodeOptions( dhcp_message *message ) {
                                                 strcpy( message->s_modem_macaddr, po->s_modem_mac );
                                                 message->b_modem_macaddr = po->b_modem_mac;
                                                 memcpy( message->modem_macaddr, po->modem_mac, 6 );
-                                                // fprintf(stderr,"%d %d %d %s\n", mmT, mmL, mmRL, po->s_modem_mac );
+                                                //fprintf(stderr,"AGENTMAC: %d %d %d %s\n", mmT, mmL, mmRL, po->s_modem_mac );
 						break;
 					case 0x2b:		// CM IP from Moto
 						ino += mmL;  mmCK -= mmL;

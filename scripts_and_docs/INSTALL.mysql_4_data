@@ -57,3 +57,12 @@ INSERT INTO `docsis_modem` (`modem_macaddr`, `cmts_vlan`, `serialnum`, `subnum`,
 ('00152f8545d4', 1, '003', 1, 'mta.bin', '0', 0, 0, 0),
 ('00152f874df8', 1, '004', 0, 'cm.bin', '0', 0, 0, 0),
 ('00152f874dfa', 1, '005', 1, 'mta.bin', '0', 0, 0, 0);
+
+--
+-- Daten für Tabelle `config_default`
+--
+
+INSERT INTO `config_default` (`ID`, `VENDOR`, `MODEL`, `BOOTFILE`) VALUES
+(1, 'Cisco', 'EPC3208', 'cisco.bin');
+
+

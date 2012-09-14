@@ -182,13 +182,14 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 	my_findMAC( message );
 
 	if (message->lease_type == LEASE_NOT_FOUND && message->in_opts.docsis_modem == 1 ) {
-		my_syslog(LOG_INFO, "NAK -- unknown docsis modem %s", message->s_macaddr );
-		send_NAK( message );
-		return 1;
+		my_syslog(LOG_INFO, "NAK -- unknown docsis modem: %s : %s ", message->s_macaddr,message->in_opts.vsi_model );
+		my_findMAC_CMUNKNOWN( message );
+		//send_NAK( message );
+		//return 1;
 	}
-
+        
 	if (message->lease_type == LEASE_REJECT) { return 0; }
-
+	
 	if (message->lease_type == LEASE_CPE &&
 	    message->cpe_type == CPE_DYNAMIC &&
 	    message->lockip == 0 &&
@@ -350,6 +351,11 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 
 	// if (mess_type == DHCP_OFFER && 
 	if (message->lease_type == LEASE_CM) {
+		// Update AgentID of cablemodem
+		my_UpdateAgent( message );
+	}
+
+	if (message->lease_type == LEASE_UNKNOWN) {
 		// Update AgentID of cablemodem
 		my_UpdateAgent( message );
 	}
