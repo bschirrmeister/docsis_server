@@ -91,7 +91,7 @@ char  *Lookup_ConfigOpts( dhcp_message *message, int opt_type ) {
 }
 
 void  my_Update_PowerDNS( dhcp_message *message ) {
-	MYSQL_RES	*res;
+/*	MYSQL_RES	*res;
 	char		*hname, *dname;
 	char		qbuf[500];
 	int		numr;
@@ -140,8 +140,8 @@ void  my_Update_PowerDNS( dhcp_message *message ) {
 	if ( mysql_query( my_pdns_sock, qbuf ) ) {
 		fprintf( stderr, "sql error\nq=%s \ne=%s\n", qbuf,
 			mysql_error( my_pdns_sock ) ); return;
-	}
-}
+	} */
+} 
 
 /* ****************************************************************** */
 

@@ -8,6 +8,10 @@ For some clearification I've added a File INSTALL.mysql_4_data which contains so
 This release includes a patch from micabu that enables packetcable, the patch and some howto can be found at http://www.docsis.org/node/486
 
 
+24 Nov 2014:
+Addes MTA-Subnet support
+Added some logmessages
+
 14 Sep 2012: 
 I've added support for DHCP-Option 43 which contains Information about the vendor, softwareversion, model and some others.
 

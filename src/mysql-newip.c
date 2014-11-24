@@ -52,9 +52,12 @@ void my_getNewIP_CM( dhcp_message *message ) {
 
 	if (server_id > 1) return;
 	my_Load_Nets();
+	my_syslog(LOG_WARNING, "NEW IP addresses to give to gi %s mac %s lease %d docsis type %d",
+		message->in_giaddr, message->s_macaddr, message->lease_type, message->in_opts.docsis_modem );
 
 	for( sn=0; sn < num_nets; sn++ ) {
-		if (my_nets[sn].nettype != LEASE_CM) continue;
+		if (((my_nets[sn].nettype != LEASE_CM)) && (( message->in_opts.docsis_modem == 1 ))) { continue; }
+		if (((my_nets[sn].nettype != LEASE_MTA)) && (( message->in_opts.docsis_modem == 2 ))) { continue; }
 		if (my_nets[sn].cmts_ip != message->in_pack.giaddr) continue;
 		if (my_nets[sn].cmts_vlan != message->vlan) continue;
 		if (my_nets[sn].full_flag == 1) { continue; }
@@ -67,7 +70,11 @@ void my_getNewIP_CM( dhcp_message *message ) {
 		for( ss=my_nets[sn].last_used_ip; ss <= h_max; ss++ ) {
 			n_ord = htonl( ss );
 			if ( my_CheckCM_IP( n_ord ) ) {
-				message->lease_type = LEASE_CM;
+        			if ( message->in_opts.docsis_modem == 1 ) {
+       	         		message->lease_type = LEASE_CM;
+	        		} else {
+       	         		message->lease_type = LEASE_MTA;
+       				}
 				message->ipaddr = n_ord;
 				inp.s_addr = n_ord;
 				strncpy( message->s_ipaddr, inet_ntoa( inp ), 20 );
@@ -96,6 +103,9 @@ void my_getNewIP_CPE( dhcp_message *message ) {
 
 	if (server_id > 1) return;
 	my_Load_Nets();
+	
+	my_syslog(LOG_WARNING, "NEW IP addresses to give to gi %s mac %s lease %d docsis type %d",
+		message->in_giaddr, message->s_macaddr, message->lease_type, message->in_opts.docsis_modem );
 
 	if (ip_pref == NULL) ip_pref = GetConfigVar( "dhcp-ip-mgmt" );
 

@@ -45,23 +45,46 @@ int   my_findMAC( dhcp_message *message ) {
 	int	result;
 
 	result = my_findBADMAC( message );
-	if (result) return result;
+	if (result) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s BADMAC", message->s_macaddr);
+		return result;
+	}
 
 	result = my_findMAC_CACHE( message );
-	if (result) return result;
+	if (result) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s CACHE", message->s_macaddr);
+		return result;
+	}
 
 	result = my_findMAC_CM( message );
-	if (result) return LEASE_CM;
+	if (result == 1) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s CM", message->s_macaddr);
+		return LEASE_CM; 
+	}
+	if (result == 2) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s MTA", message->s_macaddr);
+		return LEASE_MTA; 
+	}
+	
+	result = my_findMAC_CMUNKNOWN( message );
+	if (result) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s CMUNKNOWN", message->s_macaddr);
+ 		return LEASE_UNKNOWN;
+	}
 
 	result = my_findMAC_CPE( message );
-	if (result) return LEASE_CPE;
+	if (result) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s CPE", message->s_macaddr);
+		return LEASE_CPE;
+	}
 
 	result = my_findMAC_PRECPE( message );
-	if (result) return LEASE_CPE;
+	if (result) {
+        	my_syslog(LOG_INFO, "FOUND MAC %s CPE", message->s_macaddr);
+		return LEASE_CPE;
+	}
 
-	result = my_findMAC_CMUNKNOWN( message );
-	if (result) return LEASE_UNKNOWN;
-
+        my_syslog(LOG_INFO, "FOUND MAC %s UNKNOWN", message->s_macaddr);
 	return LEASE_NOT_FOUND;
 }
 
@@ -116,7 +139,6 @@ int   my_findIP_CM( dhcp_message *message ) {
 	return 0;
 }
 
-
 int   my_findMAC_CM( dhcp_message *message ) {
 	char		qbuf[150];
 	MYSQL_RES	*res;
@@ -138,7 +160,15 @@ int   my_findMAC_CM( dhcp_message *message ) {
 	myrow = mysql_fetch_row( res );
 	if (myrow == NULL) { mysql_free_result(res); return 0; }
 
-	message->lease_type = LEASE_CM;
+	if ( message->in_opts.docsis_modem == 1 ) { 
+		message->lease_type = LEASE_CM;
+		retv=1;
+	} 
+        if ( message->in_opts.docsis_modem == 2 ) {
+		message->lease_type = LEASE_MTA;
+		retv=2;
+	}	
+
 
 	message->vlan        = strtoul( (myrow)[0], NULL, 10 );
 	message->subnum      = strtoull( (myrow)[1], NULL, 10 );
@@ -157,7 +187,7 @@ int   my_findMAC_CM( dhcp_message *message ) {
 			my_getNewIP_CM( message );
 		}
 	}
-	return 1;
+	return retv;
 }
 
 int   my_findMAC_CMUNKNOWN( dhcp_message *message ) {
@@ -239,6 +269,7 @@ int   my_findMAC_CPE( dhcp_message *message ) {
 	struct in_addr	inp;
 	int		numr;
 
+        if ( message->in_opts.docsis_modem != 0 ) { return 0; }
 	snprintf( qbuf, 230, "select ipaddr, dynamic_flag, lockip_flag, "
 		"modem_macaddr, cmts_vlan, "
 		"unix_timestamp(end_time) - unix_timestamp(), "
@@ -291,6 +322,8 @@ int   my_findMAC_PRECPE( dhcp_message *message ) {
 	struct in_addr	inp;
 	int		numr, sn;
 	u_int32_t	h_min, h_max;
+        
+	if ( message->in_opts.docsis_modem != 0 ) { return 0; }
 
 	snprintf( qbuf, 280, "select dp.ipaddr, dp.modem_macaddr, "
 		"dp.cmts_vlan, dp.config_file, dp.config_opt from "

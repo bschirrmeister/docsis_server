@@ -110,7 +110,8 @@ void DecodeOptions( dhcp_message *message ) {
 		//fprintf(stderr,"DEBUG: OPTION: %d LENGTH: %d\n", kT, kL);
 		switch( kT ) {
 		case 0x00:
-			flag = 0;
+			ino++;
+			//flag = 0;
 			break;
 
 		case 0x0c:	/*  host-name  */
@@ -200,12 +201,17 @@ void DecodeOptions( dhcp_message *message ) {
 			memcpy( po->vendor_ident, ino, kRL ); ino += kL;
 			po->vendor_ident_len = kRL;
 			po->docsis_modem = 0;
-			if ( memcmp(po->vendor_ident, "docsis", 6) == 0) {
+			/* TODO: Adding capabilities to decode option 125 for docsis3.0  */
+			/*if ( memcmp(po->vendor_ident, "docsis", 6) == 0) {*/
+			if ( memcmp(po->vendor_ident, "docsis1", 7) == 0 || memcmp(po->vendor_ident, "docsis2", 7) == 0) { 
 				po->docsis_modem = 1;
 				Parse_Modem_Caps( message );
 			}
+                        if ( memcmp(po->vendor_ident, "docsis3", 7) == 0) {
+                                po->docsis_modem = 1;
+                        }
 			if ( memcmp(po->vendor_ident, "pktc", 4) == 0) { /* MTA MB-DOPS */
-				po->docsis_modem = 1;
+				po->docsis_modem = 2;
 				Parse_MTA_Caps( message );
 			}
 			break;
@@ -261,6 +267,12 @@ void DecodeOptions( dhcp_message *message ) {
                         }
 			break;
 
+		/* This Options contains the V-I Vendor-Information e.g. DOCSIS 3.0
+		case 0x7d: 
+                        {
+                        }
+			break;*/
+
 		case 0xff:
 			flag = 0;
 			break;
@@ -272,6 +284,7 @@ void DecodeOptions( dhcp_message *message ) {
 }
 
 
+/*void Parse_Modem_Caps3( dhcp_message *message ) {*/
 void Parse_Modem_Caps( dhcp_message *message ) {
 	packet_opts	*po;
 	u_int8_t	tmp[50];
@@ -316,6 +329,7 @@ void Parse_Modem_Caps( dhcp_message *message ) {
 	}
 
 	for( i=0; i < j; i++ ) {
+		fprintf(stderr,"tmp[%d]\n",i);
 		switch( tmp[i] ) {
 		 case 1:	po->mce_concat = tmp[i + 2];
 				i += 2; break;

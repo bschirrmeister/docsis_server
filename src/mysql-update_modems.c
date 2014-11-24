@@ -122,7 +122,7 @@ int   my_findAgent( dhcp_message *message ) {
 	char		qbuf[500];
 	packet_opts	*po = &(message->in_opts);
 
-	if (message->lease_type == LEASE_CM) {
+	if (((message->lease_type == LEASE_CM)) || ((message->lease_type == LEASE_MTA))) {
 		po->modem_mac_len = 6;
 		memcpy( po->modem_mac, message->macaddr, po->modem_mac_len );
 		strncpy( po->s_modem_mac, message->s_macaddr, 1024 );

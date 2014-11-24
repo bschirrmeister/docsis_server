@@ -44,6 +44,8 @@ int   my_findIP( dhcp_message *message, int find_type ) {
 	char		qbuf[500], *ip;
 	int		res;
 	struct in_addr	inp;
+        my_syslog(LOG_WARNING, "EXISTING IP addresses to give to gi %s mac %s lease %d docsis type %d",
+                message->in_giaddr, message->s_macaddr, message->lease_type, message->in_opts.docsis_modem );
 
 	ip = message->s_ipaddr; /* find_type = IPADDR */
 	if (find_type == FIND_CIADDR) { ip = message->in_ciaddr; } else

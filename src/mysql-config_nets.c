@@ -215,6 +215,15 @@ void  my_Load_Nets( void ) {
 				}
 			}
 		}
+                if (my_nets[i].nettype == NET_TYPE_MTA) {
+                        for (n=tmp.range_min; n < tmp.range_max; n++) {
+                                u_int32_t n_ord = htonl( n );
+                                if (my_CheckCM_IP( n_ord )) {
+                                        my_nets[i].last_used_ip = n;
+                                        n = tmp.range_max;
+                                }
+                        }
+                }
 		if (my_nets[i].nettype == NET_TYPE_CPE) {
 			for (n=tmp.range_min; n < tmp.range_max; n++) {
 				u_int32_t n_ord = htonl( n );
@@ -283,9 +292,9 @@ int Verify_Vlan( dhcp_message *message ) {
 		// range is good. 
 		return 0;
 	}
-	fprintf(stderr, "bad verify vlan mac %s ip %s  gi %s  vlan %d  num_nets %d \n",
+	fprintf(stderr, "bad verify vlan mac %s ip %s  gi %s  vlan %d  num_nets %d  leasetype %d \n",
 		message->s_macaddr, message->s_ipaddr, message->in_giaddr,
-		message->vlan, num_nets );
+		message->vlan, num_nets, message->lease_type );
 	return 1;  /* wrong giaddr for vlan. reassign ip */
 }
 

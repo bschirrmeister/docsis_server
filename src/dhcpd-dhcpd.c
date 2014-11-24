@@ -207,6 +207,13 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 			message->ipaddr = message->b_ipaddr = 0;
 			message->s_ipaddr[0] = 0;
 		}
+                if (message->lease_type == LEASE_MTA ) {
+                        my_syslog(LOG_WARNING,
+                                "NEW MTA GIaddr mismatch (the CM moved) gi %s ip %s vlan %d",
+                                message->in_giaddr, message->s_ipaddr, message->vlan );
+                        message->ipaddr = message->b_ipaddr = 0;
+                        message->s_ipaddr[0] = 0;
+                }
 		if (message->lease_type == LEASE_CPE ) {
 			my_syslog(LOG_WARNING, "NEW -- GIaddr does not match vlan - gi %s ip %s vlan %d",
 				message->in_giaddr, message->s_ipaddr, message->vlan );
@@ -255,8 +262,8 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 	}
 
 	if ( my_Get_Net( message ) ) {
-		my_syslog(LOG_WARNING, "NAK -- no subnet for ip %s mac %s vlan %d",
-			message->s_ipaddr, message->s_macaddr, message->vlan );
+		my_syslog(LOG_WARNING, "NAK -- no subnet for ip %s mac %s vlan %d, lease_type %s",
+			message->s_ipaddr, message->s_macaddr, message->vlan, message->lease_type );
 		send_NAK( message );
 		return 1;
 	}
@@ -354,6 +361,10 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 		// Update AgentID of cablemodem
 		my_UpdateAgent( message );
 	}
+        if (message->lease_type == LEASE_MTA) {
+                // Update AgentID of cablemodem
+                my_UpdateAgent( message );
+        }
 
 	if (message->lease_type == LEASE_UNKNOWN) {
 		// Update AgentID of cablemodem
