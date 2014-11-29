@@ -222,6 +222,7 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 				message->lease_type = LEASE_NOT_FOUND;
 			} else {
 				// if message->cpe_type == CPE_DYNAMIC
+				my_DeleteLease( message ); /* added 29.11.2014 */
 				message->lease_type = LEASE_NOAUTH;
 			}
 		}
@@ -258,6 +259,8 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 		if (message->lease_type == LEASE_NOAUTH) {
 			my_syslog(LOG_INFO, "NEW NOAUTH -- mac %s ip %s vlan %d",
 				message->s_macaddr, message->s_ipaddr, message->vlan );
+                	send_NAK( message ); /* added 29.11.2014 */
+                	return 1;
 		}
 	}
 
