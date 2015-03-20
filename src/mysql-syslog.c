@@ -167,7 +167,7 @@ void my_LogSyslog( u_int32_t ipaddr, char * message ) {
 			"timestamp varchar(30) not null, tag varchar(30) not null, " \
 			"message varchar(255) not null, " \
 			"index(thetime),index(ipaddr),index(priority,severity)," \
-			"index(severity) ) TYPE=MyISAM",
+			"index(severity) ) ENGINE=MyISAM",
 			dbname );
 		SQL_QUERY_RET( qbuf );
 		day_save = t2->tm_mday;
