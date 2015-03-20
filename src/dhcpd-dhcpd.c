@@ -314,24 +314,14 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 	addOpt( 0x1c, 0x04, (char *) &(netopts->broadcast) );
 
 	// Lease Times
-	if (message->cpe_type == CPE_STATIC || message->lockip == 1) {
-		message->lease_time = netopts->lease_time;
-		lease_time = htonl( message->lease_time );
-		addOpt( 0x33, 0x04, (char *) &lease_time );
-		lease_time = htonl( message->lease_time - 300 );
-		addOpt( 0x3A, 0x04, (char *) &lease_time );
-		addOpt( 0x3B, 0x04, (char *) &lease_time );
-	} else {
-		// if message->cpe_type == CPE_DYNAMIC
-		lease_time = htonl( (u_int32_t) message->lease_time );
-		if (message->lease_time < 0) lease_time = htonl( netopts->lease_time / 2 );
-		addOpt( 0x33, 0x04, (char *) &lease_time );
-		lease_time = ntohl( lease_time ) - 15;
-		if (lease_time < 5) lease_time = 5;
-		lease_time = htonl( lease_time );
-		addOpt( 0x3A, 0x04, (char *) &lease_time );
-		addOpt( 0x3B, 0x04, (char *) &lease_time );
-	}
+        message->lease_time = netopts->lease_time;
+        lease_time = htonl( message->lease_time );
+        addOpt( 0x33, 0x04, (char *) &lease_time );
+        lease_time = htonl( message->lease_time / 2 );
+        addOpt( 0x3A, 0x04, (char *) &lease_time );
+        lease_time = htonl( message->lease_time / 100 * 87.5 );
+        addOpt( 0x3B, 0x04, (char *) &lease_time );
+
 
 	addBigOpt( my_Get_Opt( 1, message->b_macaddr ) );
 	addBigOpt( my_Get_Opt( message->opt, 0 ) );
