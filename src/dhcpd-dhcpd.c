@@ -265,7 +265,7 @@ int send_positive_message( dhcp_message *message, int mess_type ) {
 	}
 
 	if ( my_Get_Net( message ) ) {
-		my_syslog(LOG_WARNING, "NAK -- no subnet for ip %s mac %s vlan %d, lease_type %s",
+		my_syslog(LOG_WARNING, "NAK -- no subnet for ip %s mac %s vlan %d, lease_type %d",
 			message->s_ipaddr, message->s_macaddr, message->vlan, message->lease_type );
 		send_NAK( message );
 		return 1;
