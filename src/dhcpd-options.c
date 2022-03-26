@@ -30,7 +30,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * changed by Michael Bülte, D-75223 Niefern-Öschelbronn, michael.buelte@bridacom.de (MTA-Support)
+ * changed by Michael BÃ¼lte, D-75223 Niefern-Ã–schelbronn, michael.buelte@bridacom.de (MTA-Support)
  */
  
 #ifdef HAVE_CONFIG_H
@@ -110,7 +110,7 @@ void DecodeOptions( dhcp_message *message ) {
 		//fprintf(stderr,"DEBUG: OPTION: %d LENGTH: %d\n", kT, kL);
 		switch( kT ) {
 		case 0x00:
-			ino++;
+			ino--; // for packets with Padding - Option (0) that has no length (KL) we need to decrement ino
 			//flag = 0;
 			break;
 
